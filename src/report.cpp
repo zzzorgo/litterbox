@@ -50,7 +50,7 @@ bool removeAllData() {
   }
 }
 
-bool printData() {
+bool printData(Print* printTarget) {
   File file = SPIFFS.open(FILE_PATH);
 
   if(!file){
@@ -58,10 +58,8 @@ bool printData() {
     return false;
   }
 
-  Serial.println("[reporter] File Content:");
-
   while(file.available()) {
-    Serial.write(file.read());
+    printTarget->write(file.read());
   }
 
   file.close();

@@ -5,6 +5,7 @@
 #include "report.h"
 #include "connectWifi.h"
 #include "initTime.h"
+#include "initServer.h"
 
 #define UNDEFINED_VALUE -1
 
@@ -21,7 +22,7 @@ enum LitterBoxState {
 LitterBoxState litterBoxState = Undefined;
 cppQueue prevValues(sizeof(float *), 2, FIFO);
 float prevStableValue = UNDEFINED_VALUE;
-float prevVesselWeight = 5.15;
+float prevVesselWeight = UNDEFINED_VALUE;
 
 void setup() {
   Serial.begin(9600);
@@ -30,12 +31,14 @@ void setup() {
     return;
   }
 
-  printData();
+  printData(&Serial);
   removeAllData();
 
   wifiBegin();
   timeBegin();
+  serverBegin();
 
+  prevVesselWeight = 5.15;
   litterBoxState = Ready;
 }
 
@@ -95,5 +98,7 @@ void loop() {
 
   prevValues.push(&currentTotalWeight);
   i++;
+  handleClient(printData);
+  // todo: remove delay
   delay(1000);
 }

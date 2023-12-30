@@ -4,7 +4,7 @@
 bool reporterBegin();
 bool removeAllData();
 bool reportWeight(const String& dateString, float catWeight, float pooWeight);
-bool printData();
+bool printData(Print* ptintTarget);
 bool removeAllData();
 
 #endif
