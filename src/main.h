@@ -1,2 +1,4 @@
-// put function declarations here:
-int myFunction(int, int);
+#ifndef LiterboxMain
+#define LiterboxMain
+
+#endif
