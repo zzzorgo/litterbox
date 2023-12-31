@@ -63,6 +63,7 @@ bool printData(Print* printTarget) {
   }
 
   file.close();
+  removeAllData();
 
   return true;
 }

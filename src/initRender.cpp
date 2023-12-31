@@ -19,10 +19,10 @@ void IRAM_ATTR handleInterrupt() {
 
 enum ScreenState {
   IpScreen,
-  TestScreen,
+  PooCount,
 };
 
-ScreenState SCREENS[] = {IpScreen, TestScreen};
+ScreenState SCREENS[] = {IpScreen, PooCount};
 int screenCount = sizeof(SCREENS) / sizeof(SCREENS[0]);
 int screenIndex = screenCount - 1;
 
@@ -51,13 +51,25 @@ void renderState() {
       case IpScreen: {
         display.setCursor(0, 0);
         display.print("IP");
+
         display.setCursor(0, 1);
         display.print(state.ip);
         break;
       }
-      case TestScreen: {
+      case PooCount: {
         display.setCursor(0, 0);
-        display.print("TEST");
+
+        char* pooCountString = (char*) malloc(5);
+        sprintf(pooCountString, "% 4d",state.pooCount);
+
+        display.print("Poo count:  ");
+        display.print(pooCountString);
+
+        display.setCursor(0, 1);
+        display.print("Cat weight: ");
+        display.print(state.catWeight);
+
+        free(pooCountString);
         break;
       }
     }

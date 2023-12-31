@@ -63,22 +63,21 @@ void loop() {
 
         if (state.litterBoxState == Ready && diff > 0) {
           state.litterBoxState = CatInside;
-        }
-
-        if (state.litterBoxState == CatInside && diff < 0) {
+        } else if (state.litterBoxState == CatInside && diff < 0) {
           state.litterBoxState = Ready;
+          state.pooCount++;
+          state.catWeight = -diff;
           float pooWeight = currentTotalWeight - prevVesselWeight;
 
           if (pooWeight < 0) {
             exit(-1);
           }
 
-          reportWeight(getFormatedTime(), -diff, pooWeight);
+          reportWeight(getFormatedTime(), state.catWeight, pooWeight);
           prevVesselWeight = currentTotalWeight;
-        }
-
-        if (state.litterBoxState == Ready && diff < 0) {
+        } else if (state.litterBoxState == Ready && diff < 0) {
           prevVesselWeight = currentTotalWeight;
+          state.pooCount = 0;
         }
       }
 

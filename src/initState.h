@@ -13,6 +13,8 @@ enum LitterBoxState {
 struct State {
     LitterBoxState litterBoxState;
     IPAddress ip;
+    int pooCount;
+    float catWeight;
 };
 
 extern State state;
