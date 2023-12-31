@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
+#include "initState.h"
+
 const char *ssid = "PunksNotDead2";
 const char *password = "Ckj;ysq0gfhjkm";
 
@@ -13,4 +15,5 @@ void wifiBegin() {
   }
 
   Serial.println("[Wifi] Connected!");
+  state.ip = WiFi.localIP();
 }
