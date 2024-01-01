@@ -95,3 +95,8 @@ void renderBegin() {
   pinMode(buttonPin, INPUT);
   attachInterrupt(digitalPinToInterrupt(buttonPin), handleInterrupt, FALLING);
 }
+
+void renderSleep() {
+  display.noBacklight();
+  display.noDisplay();
+}

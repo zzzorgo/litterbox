@@ -3,5 +3,6 @@
 
 void renderState();
 void renderBegin();
+void renderSleep();
 
 #endif

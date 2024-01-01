@@ -2,5 +2,6 @@
 #define LiterboxConnectWifi
 
 void wifiBegin();
+void wifiSleep();
 
 #endif

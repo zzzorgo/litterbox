@@ -8,6 +8,7 @@
 #include "initServer.h"
 #include "initState.h"
 #include "initRender.h"
+#include "initSleep.h"
 
 const float MOCK_INPUT[] = {5.16, 5.17, 5.18, 5.18, 5.18, 7.4, 10.52, 10.52, 10.52, 5.37, 5.37, 5.37};
 int i = 0;
@@ -17,7 +18,9 @@ float prevStableValue = UNDEFINED_VALUE;
 float prevVesselWeight = UNDEFINED_VALUE;
 
 void setup() {
+  sleepBegin();
   renderBegin();
+
   Serial.begin(9600);
 
   if (!reporterBegin()) {
@@ -94,4 +97,5 @@ void loop() {
   handleClient(printData);
   // todo: remove delay
   delay(1000);
+  // sleepOnTimeout();
 }
