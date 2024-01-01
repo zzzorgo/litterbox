@@ -3,6 +3,8 @@
 
 #include <WiFi.h>
 
+#define UNDEFINED_VALUE -1
+
 enum LitterBoxState {
   Undefined,
   Ready,

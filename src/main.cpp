@@ -2,14 +2,12 @@
 #include <cppQueue.h>
 
 #include "main.h"
-#include "report.h"
+#include "initFileWorker.h"
 #include "initWifi.h"
 #include "initTime.h"
 #include "initServer.h"
 #include "initState.h"
 #include "initRender.h"
-
-#define UNDEFINED_VALUE -1
 
 const float MOCK_INPUT[] = {5.16, 5.17, 5.18, 5.18, 5.18, 7.4, 10.52, 10.52, 10.52, 5.37, 5.37, 5.37};
 int i = 0;
@@ -74,10 +72,12 @@ void loop() {
           }
 
           reportWeight(getFormatedTime(), state.catWeight, pooWeight);
+          persistState();
           prevVesselWeight = currentTotalWeight;
         } else if (state.litterBoxState == Ready && diff < 0) {
           prevVesselWeight = currentTotalWeight;
           state.pooCount = 0;
+          persistState();
         }
       }
 

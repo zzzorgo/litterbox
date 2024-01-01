@@ -67,7 +67,12 @@ void renderState() {
 
         display.setCursor(0, 1);
         display.print("Cat weight: ");
-        display.print(state.catWeight);
+
+        if (state.catWeight == UNDEFINED_VALUE) {
+          display.print(" N/A");
+        } else {
+          display.print(state.catWeight);
+        }
 
         free(pooCountString);
         break;
