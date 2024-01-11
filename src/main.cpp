@@ -21,7 +21,7 @@ void setup() {
   sleepBegin();
   renderBegin();
 
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   if (!reporterBegin()) {
     return;
