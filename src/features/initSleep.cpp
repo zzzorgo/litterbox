@@ -2,9 +2,10 @@
 
 #include "initRender.h"
 #include "initWifi.h"
+#include "../pinConfig.h"
 
-void sleepBegin() {
-    esp_sleep_enable_ext0_wakeup(GPIO_NUM_27, LOW);
+void sleepBegin(GpioNums wakeUpPin) {
+    esp_sleep_enable_ext0_wakeup(wakeUpPin, LOW);
 }
 
 void deepSleep() {

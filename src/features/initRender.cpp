@@ -3,9 +3,9 @@
 #include <LiquidCrystal_I2C.h>
 
 #include "initState.h"
+#include "../pinConfig.h"
 
 #define i2cDisplayAddress 0x27
-#define buttonPin 27
 
 LiquidCrystal_I2C display(i2cDisplayAddress, 16, 2);
 volatile bool buttonInterruptionOccured = true;
@@ -85,7 +85,7 @@ void switchScreen() {
   Serial.println("SWITCH!");
 }
 
-void renderBegin() {
+void renderBegin(GpioNums buttonPin) {
   display.init();
   display.clear();
   display.setCursor(0, 0);

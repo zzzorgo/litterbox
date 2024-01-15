@@ -1,7 +1,9 @@
 #ifndef LiterboxSleep
 #define LiterboxSleep
 
-void sleepBegin();
+#include "../pinConfig.h"
+
+void sleepBegin(GpioNums wakeUpPin);
 void sleepOnTimeout();
 
 #endif

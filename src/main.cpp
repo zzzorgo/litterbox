@@ -1,14 +1,17 @@
 #include <Arduino.h>
 #include <cppQueue.h>
 
+#include "./features/initFileWorker.h"
+#include "./features/initRender.h"
+#include "./features/initServer.h"
+#include "./features/initSleep.h"
+#include "./features/initState.h"
+#include "./features/initTime.h"
+#include "./features/initWeight.h"
+#include "./features/initWifi.h"
+
 #include "main.h"
-#include "initFileWorker.h"
-#include "initWifi.h"
-#include "initTime.h"
-#include "initServer.h"
-#include "initState.h"
-#include "initRender.h"
-#include "initSleep.h"
+#include "pinConfig.h"
 
 const float MOCK_INPUT[] = {5.16, 5.17, 5.18, 5.18, 5.18, 7.4, 10.52, 10.52, 10.52, 5.37, 5.37, 5.37};
 int i = 0;
@@ -18,8 +21,8 @@ float prevStableValue = UNDEFINED_VALUE;
 float prevVesselWeight = UNDEFINED_VALUE;
 
 void setup() {
-  sleepBegin();
-  renderBegin();
+  sleepBegin(buttonPin);
+  renderBegin(buttonPin);
 
   Serial.begin(115200);
 
@@ -30,6 +33,15 @@ void setup() {
   wifiBegin();
   timeBegin();
   serverBegin();
+
+  WeightConfig weightConfigs[SENSOR_AMOUNT] = {
+    {.clockPin = weightSensorClockPin1, .dataPin = weightSensorDataPin1},
+    {.clockPin = weightSensorClockPin2, .dataPin = weightSensorDataPin2},
+    {.clockPin = weightSensorClockPin3, .dataPin = weightSensorDataPin3},
+    {.clockPin = weightSensorClockPin4, .dataPin = weightSensorDataPin4},
+  };
+
+  weightBegin(weightConfigs);
 
   prevVesselWeight = 5.15;
   state.litterBoxState = Ready;
