@@ -42,7 +42,7 @@ void setup() {
     {.clockPin = weightSensorClockPin4, .dataPin = weightSensorDataPin4},
   };
 
-  weightBegin(weightConfigs);
+  // weightBegin(weightConfigs);
 
   prevVesselWeight = 5.15;
   state.litterBoxState = Ready;
@@ -87,7 +87,7 @@ void loop() {
             exit(-1);
           }
 
-          reportWeight(getFormatedTime(), state.catWeight, pooWeight);
+          reportWeight(getUnixTime(), state.catWeight, pooWeight);
           persistState();
           prevVesselWeight = currentTotalWeight;
         } else if (state.litterBoxState == Ready && diff < 0) {
@@ -111,5 +111,5 @@ void loop() {
   // todo: remove delay
   delay(1000);
   // sleepOnTimeout();
-  sendRequest();
+  // sendRequest();
 }

@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "initTime.h"
 
 const char *ntpServer = "time.google.com";
 
@@ -48,4 +49,11 @@ String getFormatedTime() {
   free(secString);
 
   return str;
+}
+
+TimeMs getUnixTime() {
+  TimeMs now;
+  time(&now);
+
+  return now;
 }

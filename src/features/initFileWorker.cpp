@@ -3,6 +3,7 @@
 #include <SPIFFS.h>
 
 #include "initState.h"
+#include "initFileWorker.h"
 
 const char DATA_FILE_PATH[] = "/data.csv";
 const char STATE_FILE_PATH[] = "/state.txt";
@@ -17,7 +18,7 @@ void reportFlashMemoryUsage() {
   Serial.println(" bytes");
 }
 
-bool reportWeight(const String& dateString, float catWeight, float pooWeight) {
+bool reportWeight(TimeMs ms, float catWeight, float pooWeight) {
   File file = SPIFFS.open(DATA_FILE_PATH, FILE_APPEND);
 
   if(!file){
@@ -27,7 +28,7 @@ bool reportWeight(const String& dateString, float catWeight, float pooWeight) {
     return false;
   }
 
-  file.print(dateString);
+  file.print(ms);
   file.print(";");
   file.print(catWeight);
   file.print(";");
