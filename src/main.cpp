@@ -2,6 +2,7 @@
 #include <cppQueue.h>
 
 #include "./features/initFileWorker.h"
+#include "./features/initHttpClient.h"
 #include "./features/initRender.h"
 #include "./features/initServer.h"
 #include "./features/initSleep.h"
@@ -110,4 +111,5 @@ void loop() {
   // todo: remove delay
   delay(1000);
   // sleepOnTimeout();
+  sendRequest();
 }

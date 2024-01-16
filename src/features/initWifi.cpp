@@ -4,8 +4,8 @@
 
 #include "initState.h"
 
-const char *ssid = "PunksNotDead2";
-const char *password = "Ckj;ysq0gfhjkm";
+const char *ssid = WIFI_SSID;
+const char *password = WIFI_PASSWORD;
 
 void wifiBegin() {
   WiFi.begin(ssid, password);
