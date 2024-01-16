@@ -3,6 +3,7 @@
 #include <esp_wifi.h>
 
 #include "initState.h"
+#include "../secrets.h"
 
 const char *ssid = WIFI_SSID;
 const char *password = WIFI_PASSWORD;

@@ -55,7 +55,7 @@ void weightBegin(const WeightConfig configs[SENSOR_AMOUNT])
         xTaskCreate(
             weightingTask,
             "weightingTask" + i,
-            10000,
+            2500,
             sensorNumber,
             tskIDLE_PRIORITY,
             NULL /* Task handle. */
