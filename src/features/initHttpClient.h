@@ -1,6 +1,8 @@
 #ifndef LitterboxHttpClient
 #define LitterboxHttpClient
 
-void sendRequest();
+#include "initWeight.h"
+
+void sendWeighData(Buffer buffers[SENSOR_AMOUNT]);
 
 #endif

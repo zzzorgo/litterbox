@@ -1,11 +1,13 @@
 #include <Arduino.h>
 #include <HTTPClient.h>
 
+#include "initHttpClient.h"
+
 void beginHttpClient()
 {
 }
 
-void sendRequest()
+void sendWeighData(Buffer buffers[SENSOR_AMOUNT])
 {
     HTTPClient http;
 
@@ -28,5 +30,4 @@ void sendRequest()
     }
 
     http.end(); // Free the resources
-    delay(5000);
 }

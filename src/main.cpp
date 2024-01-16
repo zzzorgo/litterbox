@@ -21,6 +21,20 @@ cppQueue prevValues(sizeof(float *), 2, FIFO);
 float prevStableValue = UNDEFINED_VALUE;
 float prevVesselWeight = UNDEFINED_VALUE;
 
+WeightConfig weightConfigs[SENSOR_AMOUNT] = {
+  {.clockPin = weightSensorClockPin1, .dataPin = weightSensorDataPin1},
+  {.clockPin = weightSensorClockPin2, .dataPin = weightSensorDataPin2},
+  {.clockPin = weightSensorClockPin3, .dataPin = weightSensorDataPin3},
+  {.clockPin = weightSensorClockPin4, .dataPin = weightSensorDataPin4},
+};
+
+Buffer tempBuffers[SENSOR_AMOUNT] = {
+  {.data = {}, .position = 0},
+  {.data = {}, .position = 0},
+  {.data = {}, .position = 0},
+  {.data = {}, .position = 0},
+};
+
 void setup() {
   sleepBegin(buttonPin);
   renderBegin(buttonPin);
@@ -35,14 +49,7 @@ void setup() {
   timeBegin();
   serverBegin();
 
-  WeightConfig weightConfigs[SENSOR_AMOUNT] = {
-    {.clockPin = weightSensorClockPin1, .dataPin = weightSensorDataPin1},
-    {.clockPin = weightSensorClockPin2, .dataPin = weightSensorDataPin2},
-    {.clockPin = weightSensorClockPin3, .dataPin = weightSensorDataPin3},
-    {.clockPin = weightSensorClockPin4, .dataPin = weightSensorDataPin4},
-  };
-
-  // weightBegin(weightConfigs);
+  weightBegin(weightConfigs);
 
   prevVesselWeight = 5.15;
   state.litterBoxState = Ready;
@@ -109,7 +116,12 @@ void loop() {
   renderState();
   handleClient(printData);
   // todo: remove delay
-  delay(1000);
+  delay(3000);
+
+  popWeightBuffer(&tempBuffers[0]);
+  sendWeighData(&tempBuffers[0]);
+
+
+
   // sleepOnTimeout();
-  // sendRequest();
 }

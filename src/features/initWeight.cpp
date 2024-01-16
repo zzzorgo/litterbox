@@ -1,9 +1,24 @@
 #include <HX711.h>
+#include <cppQueue.h>
 
 #include "initWeight.h"
 
 ScaleSensor scaleSensors[SENSOR_AMOUNT];
 bool needResetZero[SENSOR_AMOUNT] = {true, true, true, true};
+
+Buffer buffers[] = {
+    {.data = {}, .position = 0},
+    {.data = {}, .position = 0},
+    {.data = {}, .position = 0},
+    {.data = {}, .position = 0},
+};
+
+xSemaphoreHandle mutexes[SENSOR_AMOUNT] = {
+    xSemaphoreCreateMutex(),
+    xSemaphoreCreateMutex(),
+    xSemaphoreCreateMutex(),
+    xSemaphoreCreateMutex(),
+};
 
 void weightingTask(void *parameter)
 {
@@ -15,16 +30,12 @@ void weightingTask(void *parameter)
     {
         if (scaleSensor.wait_ready_timeout(1000))
         {
-            // Serial.print("Sensor set: ");
-            // Serial.println(sensorNumber);
             long reading = scaleSensor.get_units();
-            float readingFloat = reading;
-            float weight = readingFloat / 10;
 
-            char *readingString = (char *)malloc(30);
-            sprintf(readingString, "weight %d: %.1f g", sensorNumber, weight);
-            Serial.println(readingString);
-            free(readingString);
+            xSemaphoreTake(mutexes[sensorNumber], portMAX_DELAY);
+            buffers[sensorNumber].data[buffers[sensorNumber].position] = {.time = getUnixTime(), .value = reading};
+            buffers[sensorNumber].position += 1;
+            xSemaphoreGive(mutexes[sensorNumber]);
         } else {
             Serial.print("Sensor not found: ");
             Serial.println(sensorNumber);
@@ -55,10 +66,31 @@ void weightBegin(const WeightConfig configs[SENSOR_AMOUNT])
         xTaskCreate(
             weightingTask,
             "weightingTask" + i,
-            2500,
+            1500,
             sensorNumber,
             tskIDLE_PRIORITY,
             NULL /* Task handle. */
         );
+    }
+}
+
+void popWeightBuffer(Buffer outputBuffers[SENSOR_AMOUNT]) {
+    for (int i = 0; i < SENSOR_AMOUNT; i++)
+    {
+        xSemaphoreTake(mutexes[i], portMAX_DELAY);
+    }
+
+    for (int i = 0; i < SENSOR_AMOUNT; i++)
+    {
+        int bufferSize = buffers[i].position;
+        Serial.print("size: ");
+        Serial.println(bufferSize);
+        memcpy(outputBuffers, &buffers, sizeof(buffers));
+        buffers[i].position = 0;
+    }
+
+    for (int i = 0; i < SENSOR_AMOUNT; i++)
+    {
+        xSemaphoreGive(mutexes[i]);
     }
 }
