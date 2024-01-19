@@ -15,7 +15,7 @@ void sendWeighData(Buffer buffers[SENSOR_AMOUNT])
     http.addHeader("Content-Type", "text/CSV");            // Specify content-type header
 
     String str;
-    str.reserve(6 * 1024);
+    str.reserve(24 * 1024);
 
     for (int i = 0; i < SENSOR_AMOUNT; i++)
     {
@@ -23,7 +23,7 @@ void sendWeighData(Buffer buffers[SENSOR_AMOUNT])
         {
             str += buffers[i].data[j].time;
             str += ';';
-            str += 'w';
+            str += WEIGHT_SENSOR_ID_PREFIX;
             str += i;
             str += ';';
             str += buffers[i].data[j].value;
@@ -45,7 +45,8 @@ void sendWeighData(Buffer buffers[SENSOR_AMOUNT])
 
     else
     {
-        Serial.println("[http client] Error on HTTP request");
+        Serial.print("[http client] Error on HTTP request: ");
+        Serial.println(httpResponseCode);
     }
 
     http.end(); // Free the resources

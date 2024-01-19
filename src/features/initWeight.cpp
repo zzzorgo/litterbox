@@ -39,6 +39,12 @@ void weightingTask(void *parameter)
             xSemaphoreTake(mutexes[sensorNumber], portMAX_DELAY);
             buffers[sensorNumber].data[buffers[sensorNumber].position] = {.time = getUnixTime(), .value = reading};
             buffers[sensorNumber].position += 1;
+
+            if (buffers[sensorNumber].position >= WEIGHT_BUFFER_SIZE) {
+                Serial.println("[weight] buffer overflow!");
+                buffers[sensorNumber].position = 0;
+            }
+
             xSemaphoreGive(mutexes[sensorNumber]);
         } else {
             Serial.print("[weight] Sensor not found: ");
