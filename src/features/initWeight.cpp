@@ -26,6 +26,10 @@ void weightingTask(void *parameter)
     int sensorNumber = *sensorNumberPointer;
     ScaleSensor scaleSensor = scaleSensors[sensorNumber];
 
+    Serial.print("[weight] Sensor ");
+    Serial.print(sensorNumber);
+    Serial.println(" started");
+
     while (true)
     {
         if (scaleSensor.wait_ready_timeout(1000))
@@ -37,7 +41,7 @@ void weightingTask(void *parameter)
             buffers[sensorNumber].position += 1;
             xSemaphoreGive(mutexes[sensorNumber]);
         } else {
-            Serial.print("Sensor not found: ");
+            Serial.print("[weight] Sensor not found: ");
             Serial.println(sensorNumber);
         }
 
@@ -55,13 +59,10 @@ void weightBegin(const WeightConfig configs[SENSOR_AMOUNT])
 
         if (needResetZero[i])
         {
-            ScaleSensor scaleSensor = scaleSensors[i];
-            scaleSensor.tare(10);
-            scaleSensor.set_scale(41.77);
+            scaleSensors[i].tare(10);
+            scaleSensors[i].set_scale(config.scale);
             needResetZero[i] = false;
         }
-
-        Serial.println(*sensorNumber);
 
         xTaskCreate(
             weightingTask,
@@ -80,12 +81,13 @@ void popWeightBuffer(Buffer outputBuffers[SENSOR_AMOUNT]) {
         xSemaphoreTake(mutexes[i], portMAX_DELAY);
     }
 
+    memcpy(outputBuffers, &buffers, sizeof(buffers));
+
     for (int i = 0; i < SENSOR_AMOUNT; i++)
     {
         int bufferSize = buffers[i].position;
-        Serial.print("size: ");
+        Serial.print("[weight] buffer size: ");
         Serial.println(bufferSize);
-        memcpy(outputBuffers, &buffers, sizeof(buffers));
         buffers[i].position = 0;
     }
 

@@ -14,11 +14,12 @@ using SemaphoreHandle = SemaphoreHandle_t;
 struct WeightConfig {
     GpioNums clockPin;
     GpioNums dataPin;
+    double scale;
 };
 
 struct WeightEntry {
     TimeMs time;
-    int value; // in centigrams
+    long value; // in centigrams
 };
 
 struct Buffer {

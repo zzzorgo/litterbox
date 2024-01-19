@@ -11,22 +11,41 @@ void sendWeighData(Buffer buffers[SENSOR_AMOUNT])
 {
     HTTPClient http;
 
-    http.begin("http://jsonplaceholder.typicode.com/posts"); // Specify destination for HTTP request
-    http.addHeader("Content-Type", "text/plain");            // Specify content-type header
+    http.begin("http://192.168.178.201:8088/api/sensors/data"); // Specify destination for HTTP request
+    http.addHeader("Content-Type", "text/CSV");            // Specify content-type header
 
-    int httpResponseCode = http.POST("POSTING from ESP32"); // Make the request
+    String str;
+    str.reserve(6 * 1024);
+
+    for (int i = 0; i < SENSOR_AMOUNT; i++)
+    {
+        for (int j = 0; j < buffers[i].position; j++)
+        {
+            str += buffers[i].data[j].time;
+            str += ';';
+            str += 'w';
+            str += i;
+            str += ';';
+            str += buffers[i].data[j].value;
+            str += '\n';
+        }
+    }
+
+    int httpResponseCode = http.POST(str.c_str()); // Make the request
 
     if (httpResponseCode > 0)
     { // Check for the returning code
 
         String payload = http.getString();
+        Serial.print("[http client] response code: ");
         Serial.println(httpResponseCode);
+        Serial.print("[http client] body: ");
         Serial.println(payload);
     }
 
     else
     {
-        Serial.println("Error on HTTP request");
+        Serial.println("[http client] Error on HTTP request");
     }
 
     http.end(); // Free the resources
