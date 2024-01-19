@@ -62,8 +62,8 @@ void setup() {
 }
 
 void loop() {
-  Serial.print("State: ");
-  Serial.println(state.litterBoxState);
+  // Serial.print("State: ");
+  // Serial.println(state.litterBoxState);
   float currentTotalWeight = MOCK_INPUT[i % 12];
 
   if (prevValues.isFull()) {
@@ -83,10 +83,10 @@ void loop() {
     if (valueIsStable) {
       if (prevStableValue != UNDEFINED_VALUE) {
         float diff = currentTotalWeight - prevStableValue;
-        Serial.print("New stable value: ");
-        Serial.println(currentTotalWeight);
-        Serial.print("Diff: ");
-        Serial.println(diff);
+        // Serial.print("New stable value: ");
+        // Serial.println(currentTotalWeight);
+        // Serial.print("Diff: ");
+        // Serial.println(diff);
 
         if (state.litterBoxState == Ready && diff > 0) {
           state.litterBoxState = CatInside;
@@ -100,13 +100,13 @@ void loop() {
             exit(-1);
           }
 
-          reportWeight(getUnixTime(), state.catWeight, pooWeight);
-          persistState();
+          // reportWeight(getUnixTime(), state.catWeight, pooWeight);
+          // persistState();
           prevVesselWeight = currentTotalWeight;
         } else if (state.litterBoxState == Ready && diff < 0) {
           prevVesselWeight = currentTotalWeight;
           state.pooCount = 0;
-          persistState();
+          // persistState();
         }
       }
 
@@ -121,13 +121,11 @@ void loop() {
 
   renderState();
   handleClient(printData);
-  // todo: remove delay
+  // todo: remove delay?
   delay(3000);
 
   popWeightBuffer(&tempBuffers[0]);
   sendWeighData(&tempBuffers[0]);
-
-
 
   // sleepOnTimeout();
 }

@@ -8,13 +8,15 @@
 #include "../pinConfig.h"
 
 #define SENSOR_AMOUNT 4
+#define WEIGHT_BUFFER_SIZE 200
+
 using ScaleSensor = HX711;
 using SemaphoreHandle = SemaphoreHandle_t;
 
 struct WeightConfig {
     GpioNums clockPin;
     GpioNums dataPin;
-    double scale;
+    float scale;
 };
 
 struct WeightEntry {
@@ -23,7 +25,7 @@ struct WeightEntry {
 };
 
 struct Buffer {
-    WeightEntry data[200];
+    WeightEntry data[WEIGHT_BUFFER_SIZE];
     int position;
 };
 
