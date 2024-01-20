@@ -2,7 +2,7 @@
 #include <cppQueue.h>
 
 #include "./features/initFileWorker.h"
-#include "./features/initHttpClient.h"
+#include "./features/sensorDataSender.h"
 #include "./features/initRender.h"
 #include "./features/initServer.h"
 #include "./features/initSleep.h"
