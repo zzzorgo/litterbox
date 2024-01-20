@@ -54,6 +54,11 @@ bool persistState() {
   file.println(state.pooCount);
   file.println(state.catWeight);
 
+  file.println(state.offsets[0]);
+  file.println(state.offsets[1]);
+  file.println(state.offsets[2]);
+  file.println(state.offsets[3]);
+
   reportFlashMemoryUsage();
 
   file.close();
@@ -72,6 +77,11 @@ bool restoreState() {
 
   state.pooCount = file.readStringUntil('\n').toInt();
   state.catWeight = file.readStringUntil('\n').toFloat();
+
+  state.offsets[0] = file.readStringUntil('\n').toInt();
+  state.offsets[1] = file.readStringUntil('\n').toInt();
+  state.offsets[2] = file.readStringUntil('\n').toInt();
+  state.offsets[3] = file.readStringUntil('\n').toInt();
 
   file.close();
 

@@ -4,6 +4,7 @@
 #include <HX711.h>
 
 #include "initTime.h"
+#include "initState.h"
 
 #include "../pinConfig.h"
 

@@ -4,7 +4,6 @@
 #include "initWeight.h"
 
 ScaleSensor scaleSensors[SENSOR_AMOUNT];
-bool needResetZero[SENSOR_AMOUNT] = {true, true, true, true};
 
 Buffer buffers[] = {
     {.data = {}, .position = 0},
@@ -63,12 +62,13 @@ void weightBegin(const WeightConfig configs[SENSOR_AMOUNT])
         scaleSensors[i].begin(config.dataPin, config.clockPin);
         int* sensorNumber = new int(i);
 
-        if (needResetZero[i])
-        {
-            scaleSensors[i].tare(10);
-            scaleSensors[i].set_scale(config.scale);
-            needResetZero[i] = false;
+        if (false) {
+            long newOffset = scaleSensors[i].read_average(10);
+            state.offsets[i] = newOffset;
         }
+
+        scaleSensors[i].set_offset(state.offsets[i]);
+        scaleSensors[i].set_scale(config.scale);
 
         xTaskCreate(
             weightingTask,

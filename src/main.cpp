@@ -59,6 +59,8 @@ void setup() {
 
   prevVesselWeight = 5.15;
   state.litterBoxState = Ready;
+
+  persistState();
 }
 
 void loop() {
@@ -101,12 +103,12 @@ void loop() {
           }
 
           // reportWeight(getUnixTime(), state.catWeight, pooWeight);
-          // persistState();
+          persistState();
           prevVesselWeight = currentTotalWeight;
         } else if (state.litterBoxState == Ready && diff < 0) {
           prevVesselWeight = currentTotalWeight;
           state.pooCount = 0;
-          // persistState();
+          persistState();
         }
       }
 

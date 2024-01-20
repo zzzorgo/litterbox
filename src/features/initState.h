@@ -17,6 +17,7 @@ struct State {
     IPAddress ip;
     int pooCount;
     float catWeight;
+    long offsets[4];
 };
 
 extern State state;
