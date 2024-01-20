@@ -21,7 +21,7 @@ struct WeightConfig {
 };
 
 struct WeightEntry {
-    TimeMs time;
+    UnixTimeMs time;
     long value; // in centigrams
 };
 

@@ -64,8 +64,6 @@ void setup() {
 }
 
 void loop() {
-  // Serial.print("State: ");
-  // Serial.println(state.litterBoxState);
   float currentTotalWeight = MOCK_INPUT[i % 12];
 
   if (prevValues.isFull()) {

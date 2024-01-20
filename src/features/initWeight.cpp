@@ -36,7 +36,7 @@ void weightingTask(void *parameter)
             long reading = scaleSensor.get_units();
 
             xSemaphoreTake(mutexes[sensorNumber], portMAX_DELAY);
-            buffers[sensorNumber].data[buffers[sensorNumber].position] = {.time = getUnixTime(), .value = reading};
+            buffers[sensorNumber].data[buffers[sensorNumber].position] = {.time = getUnixTimeMs(), .value = reading};
             buffers[sensorNumber].position += 1;
 
             if (buffers[sensorNumber].position >= WEIGHT_BUFFER_SIZE) {

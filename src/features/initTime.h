@@ -3,10 +3,12 @@
 
 #include <Arduino.h>
 
-using TimeMs = time_t;
+using UnixTime = time_t;
+using UnixTimeMs = int64_t;
 
 void timeBegin();
 String getFormatedTime();
-TimeMs getUnixTime();
+UnixTime getUnixTime();
+UnixTimeMs getUnixTimeMs();
 
 #endif

@@ -18,7 +18,7 @@ void reportFlashMemoryUsage() {
   Serial.println(" bytes");
 }
 
-bool reportWeight(TimeMs ms, float catWeight, float pooWeight) {
+bool reportWeight(UnixTime ms, float catWeight, float pooWeight) {
   File file = SPIFFS.open(DATA_FILE_PATH, FILE_APPEND);
 
   if(!file){
