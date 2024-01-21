@@ -9,6 +9,8 @@ enum LitterBoxState {
   Undefined,
   Ready,
   CatInside,
+  CatLeft,
+  PooRemoving,
   Maintenance
 };
 

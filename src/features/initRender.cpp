@@ -1,23 +1,22 @@
-#include <Arduino.h>
-#include <Wire.h>
-#include <LiquidCrystal_I2C.h>
-
-#include "initState.h"
-#include "../pinConfig.h"
+#include "initRender.h"
 
 #define i2cDisplayAddress 0x27
+#define LED_COUNT 4
 
 LiquidCrystal_I2C display(i2cDisplayAddress, 16, 2);
+Adafruit_NeoPixel strip(LED_COUNT, rgbPin, NEO_GRB + NEO_KHZ800);
 volatile bool buttonInterruptionOccured = true;
 portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
 
-void IRAM_ATTR handleInterrupt() {
+void IRAM_ATTR handleInterrupt()
+{
   portENTER_CRITICAL_ISR(&mux);
   buttonInterruptionOccured = true;
   portEXIT_CRITICAL_ISR(&mux);
 }
 
-enum ScreenState {
+enum ScreenState
+{
   IpScreen,
   PooCount,
 };
@@ -26,15 +25,20 @@ ScreenState SCREENS[] = {IpScreen, PooCount};
 int screenCount = sizeof(SCREENS) / sizeof(SCREENS[0]);
 int screenIndex = screenCount - 1;
 
-void renderState() {
+void renderState()
+{
   bool rerender = false;
 
-  if (buttonInterruptionOccured) {
+  if (buttonInterruptionOccured)
+  {
     rerender = true;
 
-    if (screenIndex == screenCount - 1) {
+    if (screenIndex == screenCount - 1)
+    {
       screenIndex = 0;
-    } else {
+    }
+    else
+    {
       screenIndex++;
     }
 
@@ -43,60 +47,82 @@ void renderState() {
     portEXIT_CRITICAL(&mux);
   }
 
-  if (rerender) {
+  if (rerender)
+  {
     ScreenState currentScreen = SCREENS[screenIndex];
     display.clear();
 
-    switch (currentScreen) {
-      case IpScreen: {
-        display.setCursor(0, 0);
-        display.print("IP");
+    switch (currentScreen)
+    {
+    case IpScreen:
+    {
+      display.setCursor(0, 0);
+      display.print("IP");
 
-        display.setCursor(0, 1);
-        display.print(state.ip);
-        break;
+      display.setCursor(0, 1);
+      display.print(state.ip);
+      break;
+    }
+    case PooCount:
+    {
+      display.setCursor(0, 0);
+
+      char *pooCountString = (char *)malloc(5);
+      sprintf(pooCountString, "% 4d", state.pooCount);
+
+      display.print("Poo count:  ");
+      display.print(pooCountString);
+
+      display.setCursor(0, 1);
+      display.print("Cat weight: ");
+
+      if (state.catWeight == UNDEFINED_VALUE)
+      {
+        display.print(" N/A");
       }
-      case PooCount: {
-        display.setCursor(0, 0);
-
-        char* pooCountString = (char*) malloc(5);
-        sprintf(pooCountString, "% 4d",state.pooCount);
-
-        display.print("Poo count:  ");
-        display.print(pooCountString);
-
-        display.setCursor(0, 1);
-        display.print("Cat weight: ");
-
-        if (state.catWeight == UNDEFINED_VALUE) {
-          display.print(" N/A");
-        } else {
-          display.print(state.catWeight);
-        }
-
-        free(pooCountString);
-        break;
+      else
+      {
+        display.print(state.catWeight);
       }
+
+      free(pooCountString);
+      break;
+    }
     }
   }
 }
 
-void switchScreen() {
+void switchScreen()
+{
   Serial.println("SWITCH!");
 }
 
-void renderBegin(GpioNums buttonPin) {
+void renderBegin(GpioNums buttonPin)
+{
   display.init();
   display.clear();
   display.setCursor(0, 0);
   display.print("Starting...");
   display.backlight();
 
+  strip.begin();
+
+  for (int i = 0; i < strip.numPixels() - 1; i++)
+  {
+    strip.setPixelColor(i, 200, 0, 255);
+  }
+
+  strip.setPixelColor(3, 0, 255, 0, 255);
+  strip.setBrightness(50);
+  strip.show();
+
   pinMode(buttonPin, INPUT);
   attachInterrupt(digitalPinToInterrupt(buttonPin), handleInterrupt, FALLING);
 }
 
-void renderSleep() {
+void renderSleep()
+{
   display.noBacklight();
   display.noDisplay();
+  strip.setBrightness(0);
 }

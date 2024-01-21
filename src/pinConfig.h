@@ -18,4 +18,6 @@ const GpioNums weightSensorClockPin3 = GPIO_NUM_12;
 const GpioNums weightSensorDataPin4 = GPIO_NUM_14;
 const GpioNums weightSensorClockPin4 = GPIO_NUM_27;
 
+const GpioNums rgbPin = GPIO_NUM_26;
+
 #endif
