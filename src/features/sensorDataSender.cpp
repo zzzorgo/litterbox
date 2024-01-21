@@ -65,7 +65,35 @@ void sendPooCount() {
     httpPostString(&str);
 }
 
-cppQueue sampleQueue(sizeof(long *), 10, FIFO);
+void sendCatWeight() {
+    String str;
+    str.reserve(90);
+
+    str += getUnixTimeMs();
+    str += ";w-cat;";
+    str += state.catWeight;
+    str += '\n';
+
+    httpPostString(&str);
+}
+
+void sendPooCountAndWeight(long pooWeight) {
+    String str;
+    str.reserve(180);
+
+    str += getUnixTimeMs();
+    str += ";poo-count;";
+    str += state.pooCount;
+    str += '\n';
+    str += getUnixTimeMs();
+    str += ";w-poo;";
+    str += pooWeight;
+    str += '\n';
+
+    httpPostString(&str);
+}
+
+cppQueue sampleQueue(sizeof(long *), 40, FIFO);
 long prevVesselWeight = UNDEFINED_VALUE;
 
 void next(long *value)
@@ -100,11 +128,12 @@ void next(long *value)
     } else {
         if (state.litterBoxState == CatInside) {
             state.catWeight = average - prevVesselWeight;
+            sendCatWeight();
         } else if (state.litterBoxState == CatLeft) {
             long pooWeight = *value - prevVesselWeight;
             prevVesselWeight = *value;
             state.pooCount++;
-            sendPooCount();
+            sendPooCountAndWeight(pooWeight);
             Serial.print("[data sender] poo count: ");
             Serial.println(state.pooCount);
             state.litterBoxState = Ready;
