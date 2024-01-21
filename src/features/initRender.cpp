@@ -90,6 +90,23 @@ void renderState()
     }
     }
   }
+
+  int pixelCount = strip.numPixels();
+
+  for (int i = 0; i < pixelCount; i++)
+  {
+    strip.setPixelColor(i, 170, 255, 0);
+  }
+
+  int paintRedPixelCount = min(pixelCount, state.pooCount);
+
+  for (int i = 0; i < paintRedPixelCount; i++)
+  {
+    strip.setPixelColor(i, 255, 20, 0);
+  }
+
+  strip.setBrightness(25);
+  strip.show();
 }
 
 void switchScreen()
@@ -106,15 +123,6 @@ void renderBegin(GpioNums buttonPin)
   display.backlight();
 
   strip.begin();
-
-  for (int i = 0; i < strip.numPixels() - 1; i++)
-  {
-    strip.setPixelColor(i, 200, 0, 255);
-  }
-
-  strip.setPixelColor(3, 0, 255, 0, 255);
-  strip.setBrightness(50);
-  strip.show();
 
   pinMode(buttonPin, INPUT);
   attachInterrupt(digitalPinToInterrupt(buttonPin), handleInterrupt, FALLING);
