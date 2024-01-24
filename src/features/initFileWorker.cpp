@@ -8,7 +8,8 @@
 const char DATA_FILE_PATH[] = "/data.csv";
 const char STATE_FILE_PATH[] = "/state.txt";
 
-void reportFlashMemoryUsage() {
+void reportFlashMemoryUsage()
+{
   Serial.print("[reporter] Total: ");
   Serial.print(SPIFFS.totalBytes());
   Serial.println(" bytes");
@@ -18,10 +19,12 @@ void reportFlashMemoryUsage() {
   Serial.println(" bytes");
 }
 
-bool reportWeight(UnixTime ms, float catWeight, float pooWeight) {
+bool reportWeight(UnixTime ms, float catWeight, float pooWeight)
+{
   File file = SPIFFS.open(DATA_FILE_PATH, FILE_APPEND);
 
-  if(!file){
+  if (!file)
+  {
     Serial.print("[reporter] Failed to open file ");
     Serial.println(DATA_FILE_PATH);
 
@@ -41,35 +44,58 @@ bool reportWeight(UnixTime ms, float catWeight, float pooWeight) {
   return true;
 }
 
-bool persistState() {
-  File file = SPIFFS.open(STATE_FILE_PATH, FILE_WRITE);
+State prevState;
 
-  if(!file){
-    Serial.print("[reporter] Failed to open file ");
-    Serial.println(STATE_FILE_PATH);
+bool persistState()
+{
+  if (
+    state.catWeight != prevState.catWeight ||
+    state.pooCount != prevState.pooCount ||
+    state.offsets[0] != prevState.offsets[0] ||
+    state.offsets[1] != prevState.offsets[1] ||
+    state.offsets[2] != prevState.offsets[2] ||
+    state.offsets[3] != prevState.offsets[3]
+  )
+  {
+    File file = SPIFFS.open(STATE_FILE_PATH, FILE_WRITE);
 
-    return false;
+    if (!file)
+    {
+      Serial.print("[reporter] Failed to open file ");
+      Serial.println(STATE_FILE_PATH);
+
+      return false;
+    }
+
+    file.println(state.pooCount);
+    file.println(state.catWeight);
+
+    file.println(state.offsets[0]);
+    file.println(state.offsets[1]);
+    file.println(state.offsets[2]);
+    file.println(state.offsets[3]);
+
+    reportFlashMemoryUsage();
+
+    file.close();
+
+    prevState.catWeight = state.catWeight;
+    prevState.pooCount = state.pooCount;
+    prevState.offsets[0] = state.offsets[0];
+    prevState.offsets[1] = state.offsets[1];
+    prevState.offsets[2] = state.offsets[2];
+    prevState.offsets[3] = state.offsets[3];
   }
-
-  file.println(state.pooCount);
-  file.println(state.catWeight);
-
-  file.println(state.offsets[0]);
-  file.println(state.offsets[1]);
-  file.println(state.offsets[2]);
-  file.println(state.offsets[3]);
-
-  reportFlashMemoryUsage();
-
-  file.close();
 
   return true;
 }
 
-bool restoreState() {
+bool restoreState()
+{
   File file = SPIFFS.open(STATE_FILE_PATH);
 
-  if(!file){
+  if (!file)
+  {
     Serial.print("[reporter] Failed to open file for reading ");
     Serial.println(STATE_FILE_PATH);
     return false;
@@ -88,8 +114,10 @@ bool restoreState() {
   return true;
 }
 
-bool reporterBegin() {
-  if (!SPIFFS.begin(true)) {
+bool reporterBegin()
+{
+  if (!SPIFFS.begin(true))
+  {
     Serial.println("[reporter] Failed to initialize FS");
 
     return false;
@@ -100,23 +128,30 @@ bool reporterBegin() {
   return true;
 }
 
-bool removeAllData() {
-  if (SPIFFS.exists(DATA_FILE_PATH)) {
+bool removeAllData()
+{
+  if (SPIFFS.exists(DATA_FILE_PATH))
+  {
     return SPIFFS.remove(DATA_FILE_PATH);
-  } else {
+  }
+  else
+  {
     return true;
   }
 }
 
-bool printData(Print* printTarget) {
+bool printData(Print *printTarget)
+{
   File file = SPIFFS.open(DATA_FILE_PATH);
 
-  if(!file){
+  if (!file)
+  {
     Serial.println("[reporter] Failed to open file for reading");
     return false;
   }
 
-  while(file.available()) {
+  while (file.available())
+  {
     printTarget->write(file.read());
   }
 
