@@ -53,23 +53,20 @@ void sendRawData(Buffer buffers[SENSOR_AMOUNT])
     httpPostString(&str);
 }
 
-void sendPooCount() {
+void sendPooCountAndWeight(long pooWeight) {
     String str;
-    str.reserve(90);
+    str.reserve(270);
+    UnixTimeMs nowTime = getUnixTimeMs();
 
-    str += getUnixTimeMs();
+    str += nowTime;
     str += ";poo-count;";
     str += state.pooCount;
     str += '\n';
-
-    httpPostString(&str);
-}
-
-void sendCatWeight() {
-    String str;
-    str.reserve(90);
-
-    str += getUnixTimeMs();
+    str += nowTime;
+    str += ";w-poo;";
+    str += pooWeight;
+    str += '\n';
+    str += nowTime;
     str += ";w-cat;";
     str += state.catWeight;
     str += '\n';
@@ -77,34 +74,11 @@ void sendCatWeight() {
     httpPostString(&str);
 }
 
-void sendPooCountAndWeight(long pooWeight) {
-    String str;
-    str.reserve(180);
-
-    str += getUnixTimeMs();
-    str += ";poo-count;";
-    str += state.pooCount;
-    str += '\n';
-    str += getUnixTimeMs();
-    str += ";w-poo;";
-    str += pooWeight;
-    str += '\n';
-
-    httpPostString(&str);
-}
-
-cppQueue sampleQueue(sizeof(long *), 40, FIFO);
+cppQueue sampleQueue(sizeof(long *), 200, FIFO);
 long prevVesselWeight = UNDEFINED_VALUE;
 
 void next(long *value)
 {
-    if (sampleQueue.isFull())
-    {
-        sampleQueue.drop();
-    }
-
-    sampleQueue.push(value);
-
     long sum = 0;
 
     for (int j = 0; j < sampleQueue.getCount(); j++) {
@@ -114,39 +88,46 @@ void next(long *value)
         sum += queueValue;
     }
 
-    long average = sum / sampleQueue.getCount();
+    long average = UNDEFINED_VALUE;
+
+    if (sampleQueue.getCount() == 0) {
+        long average = *value;
+    } else {
+        average = sum / sampleQueue.getCount();
+    }
+
     long diff = *value - average;
 
-    if (abs(diff) > STABILITY_THRESHOLD) {
-        if (state.litterBoxState == Ready && diff > 0) {
-            state.litterBoxState = CatInside;
-        } else if (state.litterBoxState == CatInside && diff < 0) {
-            state.litterBoxState = CatLeft;
-        } else if (state.litterBoxState == Ready && diff < 0) {
-            state.litterBoxState = PooRemoving;
-        }
-    } else {
-        if (state.litterBoxState == CatInside) {
-            state.catWeight = average - prevVesselWeight;
-            sendCatWeight();
-        } else if (state.litterBoxState == CatLeft) {
-            long pooWeight = *value - prevVesselWeight;
-            prevVesselWeight = *value;
-            state.pooCount++;
-            sendPooCountAndWeight(pooWeight);
-            Serial.print("[data sender] poo count: ");
-            Serial.println(state.pooCount);
-            state.litterBoxState = Ready;
-        } else if (state.litterBoxState == Ready) {
-            prevVesselWeight = average;
-        } else if (state.litterBoxState == PooRemoving) {
-            state.litterBoxState = Ready;
-            state.pooCount = 0;
-            sendPooCount();
-            Serial.print("[data sender] poo count: ");
-            Serial.println(state.pooCount);
-        }
+    if (diff > 250 && state.litterBoxState == Ready) {
+        prevVesselWeight = average;
+        state.litterBoxState = Rising;
     }
+
+    if (abs(diff) < 20 && state.litterBoxState == Rising) {
+        state.catWeight = average - prevVesselWeight;
+        state.litterBoxState = StableHigh;
+
+    }
+
+    if (-diff > 2000 && state.litterBoxState == StableHigh) {
+        state.litterBoxState = Falling;
+    }
+
+    if (abs(diff) < 20 && state.litterBoxState == Falling) {
+        long pooWeight = *value - prevVesselWeight;
+        prevVesselWeight = *value;
+        state.pooCount += 1;
+        state.litterBoxState = Ready;
+
+        sendPooCountAndWeight(pooWeight);
+    }
+
+    if (sampleQueue.isFull())
+    {
+        sampleQueue.drop();
+    }
+
+    sampleQueue.push(value);
 }
 
 void sendAggregatedData(Buffer buffers[SENSOR_AMOUNT])
