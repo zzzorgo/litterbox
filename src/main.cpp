@@ -50,7 +50,7 @@ void setup() {
 
   weightBegin(weightConfigs);
 
-  state.litterBoxState = Ready;
+  state.litterBoxState = InitialWeight;
 
   persistState();
 }

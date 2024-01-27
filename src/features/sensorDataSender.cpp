@@ -74,55 +74,122 @@ void sendPooCountAndWeight(long pooWeight) {
     httpPostString(&str);
 }
 
-cppQueue sampleQueue(sizeof(long *), 200, FIFO);
+void sendPooCount() {
+    String str;
+    str.reserve(90);
+    UnixTimeMs nowTime = getUnixTimeMs();
+
+    str += nowTime;
+    str += ";poo-count;";
+    str += state.pooCount;
+    str += '\n';
+
+    httpPostString(&str);
+}
+
+void sendLitterBoxState() {
+    String str;
+    str.reserve(90);
+    UnixTimeMs nowTime = getUnixTimeMs();
+
+    str += nowTime;
+    str += ";state;";
+    str += state.litterBoxState;
+    str += '\n';
+
+    httpPostString(&str);
+}
+
+cppQueue sampleQueue(sizeof(long *), MAX_LENGTH, FIFO);
 long prevVesselWeight = UNDEFINED_VALUE;
+LitterBoxState prevLitterBoxState = InitialWeight;
+long softStableValues[SOFT_STABLE_BUFFER_SIZE] = {};
+int softStableValuesCount = 0;
 
 void next(long *value)
 {
-    long sum = 0;
+    if (sampleQueue.getCount() == MAX_LENGTH) {
+        long maxDiff = 0;
 
-    for (int j = 0; j < sampleQueue.getCount(); j++) {
-        long queueValue = UNDEFINED_VALUE;
-        sampleQueue.peekIdx(&queueValue, j);
+        for (int j = 0; j < sampleQueue.getCount() - 1; j++) {
+            long queueValue = UNDEFINED_VALUE;
+            long nextQueueValue = UNDEFINED_VALUE;
+            sampleQueue.peekIdx(&queueValue, j);
+            sampleQueue.peekIdx(&nextQueueValue, j + 1);
 
-        sum += queueValue;
-    }
+            long diff = abs(queueValue - nextQueueValue);
 
-    long average = UNDEFINED_VALUE;
+            if (maxDiff < diff) {
+                maxDiff = diff;
+            }
+        }
 
-    if (sampleQueue.getCount() == 0) {
-        long average = *value;
-    } else {
-        average = sum / sampleQueue.getCount();
-    }
+        long sum = 0;
 
-    long diff = *value - average;
+        for (int j = 0; j < sampleQueue.getCount(); j++) {
+            long queueValue = UNDEFINED_VALUE;
+            sampleQueue.peekIdx(&queueValue, j);
 
-    if (diff > 250 && state.litterBoxState == Ready) {
-        prevVesselWeight = average;
-        state.litterBoxState = Rising;
-    }
+            sum += queueValue;
+        }
 
-    if (abs(diff) < 20 && state.litterBoxState == Rising) {
-        state.catWeight = average - prevVesselWeight;
-        state.litterBoxState = StableHigh;
-    }
+        long average = UNDEFINED_VALUE;
 
-    if (-diff > 2000 && state.litterBoxState == StableHigh) {
-        state.litterBoxState = Falling;
-    }
+        if (maxDiff < STABLE_THRESHOLD) {
+            state.litterBoxState = StableWeight;
+        } else if (maxDiff >= STABLE_THRESHOLD && maxDiff < SOFT_STABLE_THRESHOLD) {
+            state.litterBoxState = SoftStableWeight;
+        } else if (maxDiff >= SOFT_STABLE_THRESHOLD) {
+            state.litterBoxState = UnstableWeight;
+        }
 
-    if (abs(diff) < 20 && state.litterBoxState == Falling) {
-        long pooWeight = *value - prevVesselWeight;
-        prevVesselWeight = *value;
-        state.pooCount += 1;
-        state.litterBoxState = Ready;
+        if (prevLitterBoxState != state.litterBoxState) {
+            if (state.litterBoxState == StableWeight) {
+                if (prevLitterBoxState != InitialWeight) {
+                    long vesselDiff = average - prevVesselWeight;
 
-        sendPooCountAndWeight(pooWeight);
-    }
+                    if (vesselDiff > ACTION_SENSITIVITY_THRESHOLD) {
+                        long maxSoftStableValue = 0;
 
-    if (sampleQueue.isFull())
-    {
+                        for (int i = 0; i < softStableValuesCount; i++)
+                        {
+                            if (maxSoftStableValue < softStableValues[i]) {
+                                maxSoftStableValue =  softStableValues[i];
+                            }
+                        }
+
+                        long catWeight = maxSoftStableValue - average;
+                        state.pooCount++;
+                        state.catWeight = catWeight;
+
+                        sendPooCountAndWeight(vesselDiff);
+                    } else if (vesselDiff < -ACTION_SENSITIVITY_THRESHOLD) {
+                        state.pooCount = 0;
+                        sendPooCount();
+                    }
+
+                    softStableValuesCount = 0;
+                }
+            }
+
+            if (state.litterBoxState == SoftStableWeight) {
+                softStableValues[softStableValuesCount] = average;
+                softStableValuesCount++;
+
+                if (softStableValuesCount >= SOFT_STABLE_BUFFER_SIZE) {
+                    Serial.println("[data sender] softStableValues overflow");
+                    softStableValuesCount = 0;
+                }
+            }
+
+            sendLitterBoxState();
+            prevLitterBoxState = state.litterBoxState;
+        }
+
+        if (state.litterBoxState == StableWeight) {
+            prevVesselWeight = average;
+        }
+
         sampleQueue.drop();
     }
 

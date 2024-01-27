@@ -6,10 +6,10 @@
 #define UNDEFINED_VALUE -1
 
 enum LitterBoxState {
-  Ready,
-  Rising,
-  Falling,
-  StableHigh,
+  InitialWeight,
+  StableWeight,
+  SoftStableWeight,
+  UnstableWeight,
 };
 
 struct State {

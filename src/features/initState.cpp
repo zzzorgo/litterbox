@@ -1,7 +1,7 @@
 #include "initState.h"
 
 State state = {
-    .litterBoxState = Ready,
+    .litterBoxState = InitialWeight,
     .ip = WiFi.localIP(),
     .pooCount = 0,
     .catWeight = 0,
