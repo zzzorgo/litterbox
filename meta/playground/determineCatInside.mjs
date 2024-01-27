@@ -13,7 +13,7 @@ const MAX_LENGTH = 50;
 const run = () => {
     const rawTable = fs
         .readFileSync(
-            '<insert path>'
+            './meta/playground/cat-visit3-x10.csv'
         )
         .toString();
 

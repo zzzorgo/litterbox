@@ -100,6 +100,21 @@ void sendLitterBoxState() {
     httpPostString(&str);
 }
 
+
+void sendDebugData(long data) {
+    String str;
+    str.reserve(90);
+    UnixTimeMs nowTime = getUnixTimeMs();
+
+    str += nowTime;
+    str += ";debug;";
+    str += data;
+    str += '\n';
+
+    httpPostString(&str);
+}
+
+int MAX_LENGTH = 50;
 cppQueue sampleQueue(sizeof(long *), MAX_LENGTH, FIFO);
 long prevVesselWeight = UNDEFINED_VALUE;
 LitterBoxState prevLitterBoxState = InitialWeight;
@@ -133,7 +148,7 @@ void next(long *value)
             sum += queueValue;
         }
 
-        long average = UNDEFINED_VALUE;
+        long average = sum / sampleQueue.getCount();
 
         if (maxDiff < STABLE_THRESHOLD) {
             state.litterBoxState = StableWeight;
@@ -147,6 +162,8 @@ void next(long *value)
             if (state.litterBoxState == StableWeight) {
                 if (prevLitterBoxState != InitialWeight) {
                     long vesselDiff = average - prevVesselWeight;
+                    Serial.println(average);
+                    Serial.println(prevVesselWeight);
 
                     if (vesselDiff > ACTION_SENSITIVITY_THRESHOLD) {
                         long maxSoftStableValue = 0;
