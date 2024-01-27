@@ -6,7 +6,7 @@
 
 bool reporterBegin();
 bool removeAllData();
-bool reportWeight(UnixTime dateString, float catWeight, float pooWeight);
+bool reportWeight(UnixTime dateString, int catWeight, float pooWeight);
 bool printData(Print* ptintTarget);
 bool removeAllData();
 bool persistState();

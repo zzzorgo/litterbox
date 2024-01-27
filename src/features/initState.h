@@ -16,7 +16,7 @@ struct State {
     LitterBoxState litterBoxState;
     IPAddress ip;
     int pooCount;
-    float catWeight;
+    int catWeight;
     long offsets[4];
 };
 

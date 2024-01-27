@@ -19,7 +19,7 @@ void reportFlashMemoryUsage()
   Serial.println(" bytes");
 }
 
-bool reportWeight(UnixTime ms, float catWeight, float pooWeight)
+bool reportWeight(UnixTime ms, int catWeight, float pooWeight)
 {
   File file = SPIFFS.open(DATA_FILE_PATH, FILE_APPEND);
 
@@ -102,7 +102,7 @@ bool restoreState()
   }
 
   state.pooCount = file.readStringUntil('\n').toInt();
-  state.catWeight = file.readStringUntil('\n').toFloat();
+  state.catWeight = file.readStringUntil('\n').toInt();
 
   state.offsets[0] = file.readStringUntil('\n').toInt();
   state.offsets[1] = file.readStringUntil('\n').toInt();

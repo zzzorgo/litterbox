@@ -76,7 +76,7 @@ void renderState()
       display.setCursor(0, 1);
       display.print("Cat weight: ");
 
-      if (state.catWeight == UNDEFINED_VALUE)
+      if (state.catWeight == 0)
       {
         display.print(" N/A");
       }

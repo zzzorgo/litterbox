@@ -106,7 +106,6 @@ void next(long *value)
     if (abs(diff) < 20 && state.litterBoxState == Rising) {
         state.catWeight = average - prevVesselWeight;
         state.litterBoxState = StableHigh;
-
     }
 
     if (-diff > 2000 && state.litterBoxState == StableHigh) {
