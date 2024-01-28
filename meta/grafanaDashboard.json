@@ -102,7 +102,7 @@
             "calcs": [],
             "displayMode": "list",
             "placement": "bottom",
-            "showLegend": true
+            "showLegend": false
           },
           "tooltip": {
             "mode": "multi",
@@ -226,7 +226,7 @@
                 },
                 {
                   "id": "custom.lineInterpolation",
-                  "value": "stepBefore"
+                  "value": "stepAfter"
                 },
                 {
                   "id": "custom.lineStyle",
@@ -308,6 +308,15 @@
             "hide": false,
             "query": "import \"join\"\n\nleft = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"state\")\n\nright = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"state\")\n  |> last()\n  |> map(fn: (r) => ({r with _time: v.timeRangeStop}))\n\nunion(tables: [left, right])\n",
             "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+            },
+            "hide": false,
+            "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"debug\")",
+            "refId": "C"
           }
         ],
         "title": "Total weight",
@@ -356,6 +365,7 @@
                 "mode": "off"
               }
             },
+            "decimals": 3,
             "mappings": [],
             "thresholds": {
               "mode": "absolute",
@@ -370,6 +380,7 @@
                 }
               ]
             },
+            "unit": "massg",
             "unitScale": true
           },
           "overrides": []
@@ -383,10 +394,13 @@
         "id": 3,
         "options": {
           "legend": {
-            "calcs": [],
-            "displayMode": "hidden",
-            "placement": "right",
-            "showLegend": false
+            "calcs": [
+              "last",
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
           },
           "tooltip": {
             "mode": "single",
@@ -405,73 +419,6 @@
         ],
         "title": "Cat",
         "type": "timeseries"
-      },
-      {
-        "datasource": {
-          "type": "influxdb",
-          "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "continuous-GrYlRd"
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            },
-            "unitScale": true
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 4,
-          "w": 12,
-          "x": 0,
-          "y": 15
-        },
-        "id": 5,
-        "options": {
-          "displayMode": "lcd",
-          "maxVizHeight": 300,
-          "minVizHeight": 16,
-          "minVizWidth": 8,
-          "namePlacement": "auto",
-          "orientation": "horizontal",
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
-            "fields": "",
-            "values": false
-          },
-          "showUnfilled": true,
-          "sizing": "auto",
-          "valueMode": "color"
-        },
-        "pluginVersion": "10.3.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "influxdb",
-              "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-            },
-            "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"poo-count\")",
-            "refId": "A"
-          }
-        ],
-        "title": "Poo count",
-        "type": "bargauge"
       },
       {
         "datasource": {
@@ -521,9 +468,9 @@
           "overrides": []
         },
         "gridPos": {
-          "h": 7,
+          "h": 5,
           "w": 6,
-          "x": 18,
+          "x": 0,
           "y": 15
         },
         "id": 4,
@@ -565,22 +512,90 @@
         ],
         "title": "Poo weight",
         "type": "barchart"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "continuous-GrYlRd"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 5,
+          "x": 6,
+          "y": 15
+        },
+        "id": 5,
+        "options": {
+          "displayMode": "lcd",
+          "maxVizHeight": 250,
+          "minVizHeight": 0,
+          "minVizWidth": 8,
+          "namePlacement": "auto",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "/^value$/",
+            "limit": 1,
+            "values": false
+          },
+          "showUnfilled": true,
+          "sizing": "auto",
+          "valueMode": "color"
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+            },
+            "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"poo-count\")",
+            "refId": "A"
+          }
+        ],
+        "title": "Poo count",
+        "type": "bargauge"
       }
     ],
-    "refresh": "10s",
+    "refresh": "5s",
     "schemaVersion": 39,
     "tags": [],
     "templating": {
       "list": []
     },
     "time": {
-      "from": "now-15m",
+      "from": "now-5m",
       "to": "now"
     },
     "timepicker": {},
     "timezone": "",
     "title": "Litterbox",
     "uid": "df077a11-8041-48cb-8888-f46164848df6",
-    "version": 60,
+    "version": 67,
     "weekStart": ""
   }
