@@ -46,6 +46,7 @@ void setup() {
 
   wifiBegin();
   timeBegin();
+  reportResetReason();
   serverBegin();
 
   weightBegin(weightConfigs);

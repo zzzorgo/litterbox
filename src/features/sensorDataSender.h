@@ -11,5 +11,6 @@
 #define ACTION_SENSITIVITY_THRESHOLD 100  // centigrams
 
 void sendWeighData(Buffer buffers[SENSOR_AMOUNT]);
+void reportResetReason();
 
 #endif

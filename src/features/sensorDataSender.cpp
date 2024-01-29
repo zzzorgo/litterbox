@@ -53,7 +53,8 @@ void sendRawData(Buffer buffers[SENSOR_AMOUNT])
     httpPostString(&str);
 }
 
-void sendPooCountAndWeight(long pooWeight) {
+void sendPooCountAndWeight(long pooWeight)
+{
     String str;
     str.reserve(270);
     UnixTimeMs nowTime = getUnixTimeMs();
@@ -74,7 +75,8 @@ void sendPooCountAndWeight(long pooWeight) {
     httpPostString(&str);
 }
 
-void sendPooCount() {
+void sendPooCount()
+{
     String str;
     str.reserve(90);
     UnixTimeMs nowTime = getUnixTimeMs();
@@ -87,12 +89,12 @@ void sendPooCount() {
     httpPostString(&str);
 }
 
-void sendLitterBoxState() {
+void sendLitterBoxState(UnixTimeMs ms)
+{
     String str;
     str.reserve(90);
-    UnixTimeMs nowTime = getUnixTimeMs();
 
-    str += nowTime;
+    str += ms;
     str += ";state;";
     str += state.litterBoxState;
     str += '\n';
@@ -100,78 +102,91 @@ void sendLitterBoxState() {
     httpPostString(&str);
 }
 
-
-void sendDebugData(long data) {
+void reportResetReason()
+{
     String str;
     str.reserve(90);
     UnixTimeMs nowTime = getUnixTimeMs();
 
     str += nowTime;
-    str += ";debug;";
-    str += data;
+    str += ";rst-reason;";
+    str += esp_reset_reason();
     str += '\n';
 
     httpPostString(&str);
 }
 
 int MAX_LENGTH = 50;
-cppQueue sampleQueue(sizeof(long *), MAX_LENGTH, FIFO);
+cppQueue sampleQueue(sizeof(WeightEntry), MAX_LENGTH, FIFO);
 long prevVesselWeight = UNDEFINED_VALUE;
 LitterBoxState prevLitterBoxState = InitialWeight;
 long softStableValues[SOFT_STABLE_BUFFER_SIZE] = {};
 int softStableValuesCount = 0;
 
-void next(long *value)
+void next(WeightEntry entry)
 {
-    if (sampleQueue.getCount() == MAX_LENGTH) {
+    if (sampleQueue.getCount() == MAX_LENGTH)
+    {
         long maxDiff = 0;
 
-        for (int j = 0; j < sampleQueue.getCount() - 1; j++) {
-            long queueValue = UNDEFINED_VALUE;
-            long nextQueueValue = UNDEFINED_VALUE;
+        for (int j = 0; j < sampleQueue.getCount() - 1; j++)
+        {
+            WeightEntry queueValue;
+            WeightEntry nextQueueValue;
+
             sampleQueue.peekIdx(&queueValue, j);
             sampleQueue.peekIdx(&nextQueueValue, j + 1);
 
-            long diff = abs(queueValue - nextQueueValue);
+            long diff = abs(queueValue.value - nextQueueValue.value);
 
-            if (maxDiff < diff) {
+            if (maxDiff < diff)
+            {
                 maxDiff = diff;
             }
         }
 
         long sum = 0;
 
-        for (int j = 0; j < sampleQueue.getCount(); j++) {
-            long queueValue = UNDEFINED_VALUE;
+        for (int j = 0; j < sampleQueue.getCount(); j++)
+        {
+            WeightEntry queueValue;
             sampleQueue.peekIdx(&queueValue, j);
 
-            sum += queueValue;
+            sum += queueValue.value;
         }
 
         long average = sum / sampleQueue.getCount();
 
-        if (maxDiff < STABLE_THRESHOLD) {
+        if (maxDiff < STABLE_THRESHOLD)
+        {
             state.litterBoxState = StableWeight;
-        } else if (maxDiff >= STABLE_THRESHOLD && maxDiff < SOFT_STABLE_THRESHOLD) {
+        }
+        else if (maxDiff >= STABLE_THRESHOLD && maxDiff < SOFT_STABLE_THRESHOLD)
+        {
             state.litterBoxState = SoftStableWeight;
-        } else if (maxDiff >= SOFT_STABLE_THRESHOLD) {
+        }
+        else if (maxDiff >= SOFT_STABLE_THRESHOLD)
+        {
             state.litterBoxState = UnstableWeight;
         }
 
-        if (prevLitterBoxState != state.litterBoxState) {
-            if (state.litterBoxState == StableWeight) {
-                if (prevLitterBoxState != InitialWeight) {
+        if (prevLitterBoxState != state.litterBoxState)
+        {
+            if (state.litterBoxState == StableWeight)
+            {
+                if (prevLitterBoxState != InitialWeight)
+                {
                     long vesselDiff = average - prevVesselWeight;
-                    Serial.println(average);
-                    Serial.println(prevVesselWeight);
 
-                    if (vesselDiff > ACTION_SENSITIVITY_THRESHOLD) {
+                    if (vesselDiff > ACTION_SENSITIVITY_THRESHOLD)
+                    {
                         long maxSoftStableValue = 0;
 
                         for (int i = 0; i < softStableValuesCount; i++)
                         {
-                            if (maxSoftStableValue < softStableValues[i]) {
-                                maxSoftStableValue =  softStableValues[i];
+                            if (maxSoftStableValue < softStableValues[i])
+                            {
+                                maxSoftStableValue = softStableValues[i];
                             }
                         }
 
@@ -180,7 +195,9 @@ void next(long *value)
                         state.catWeight = catWeight;
 
                         sendPooCountAndWeight(vesselDiff);
-                    } else if (vesselDiff < -ACTION_SENSITIVITY_THRESHOLD) {
+                    }
+                    else if (vesselDiff < -ACTION_SENSITIVITY_THRESHOLD)
+                    {
                         state.pooCount = 0;
                         sendPooCount();
                     }
@@ -189,28 +206,41 @@ void next(long *value)
                 }
             }
 
-            if (state.litterBoxState == SoftStableWeight) {
+            if (state.litterBoxState == SoftStableWeight)
+            {
                 softStableValues[softStableValuesCount] = average;
                 softStableValuesCount++;
 
-                if (softStableValuesCount >= SOFT_STABLE_BUFFER_SIZE) {
+                if (softStableValuesCount >= SOFT_STABLE_BUFFER_SIZE)
+                {
                     Serial.println("[data sender] softStableValues overflow");
                     softStableValuesCount = 0;
                 }
             }
 
-            sendLitterBoxState();
+            UnixTimeMs timeOfStateChange = 0;
+            if (prevLitterBoxState < state.litterBoxState)
+            {
+                timeOfStateChange = entry.time;
+            } else {
+                WeightEntry queueValue;
+                timeOfStateChange = sampleQueue.peek(&queueValue);
+                timeOfStateChange = queueValue.time;
+            }
+
+            sendLitterBoxState(timeOfStateChange);
             prevLitterBoxState = state.litterBoxState;
         }
 
-        if (state.litterBoxState == StableWeight) {
+        if (state.litterBoxState == StableWeight)
+        {
             prevVesselWeight = average;
         }
 
         sampleQueue.drop();
     }
 
-    sampleQueue.push(value);
+    sampleQueue.push(&entry);
 }
 
 void sendAggregatedData(Buffer buffers[SENSOR_AMOUNT])
@@ -239,7 +269,7 @@ void sendAggregatedData(Buffer buffers[SENSOR_AMOUNT])
 
         sample[j].time = sample[j].time / SENSOR_AMOUNT;
 
-        next(&sample[j].value);
+        next(sample[j]);
     }
 
     String str;
@@ -258,16 +288,6 @@ void sendAggregatedData(Buffer buffers[SENSOR_AMOUNT])
 
 void sendWeighData(Buffer buffers[SENSOR_AMOUNT])
 {
-    // Some times data is collected before the time is initialized even though
-    // ntp server is configured before that moment. A proper fix is to sync
-    // ntp server request with this function
-    if (buffers[0].data[0].time < 1705754118000)
-    {
-        Serial.println("[data sender] invalid time, sending data aborted");
-
-        return;
-    }
-
     sendRawData(buffers);
     sendAggregatedData(buffers);
 }

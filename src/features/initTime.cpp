@@ -5,6 +5,12 @@ const char *ntpServer = "time.google.com";
 
 void timeBegin() {
   configTime(0, 3600, ntpServer);
+  UnixTimeMs ms = getUnixTimeMs();
+
+  while(ms < 1705754118000) {
+    delay(100);
+    ms = getUnixTimeMs();
+  }
 }
 
 String getFormatedTime() {

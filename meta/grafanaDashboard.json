@@ -1,601 +1,915 @@
 {
-    "annotations": {
-      "list": [
-        {
-          "builtIn": 1,
-          "datasource": {
-            "type": "grafana",
-            "uid": "-- Grafana --"
-          },
-          "enable": true,
-          "hide": true,
-          "iconColor": "rgba(0, 211, 255, 1)",
-          "name": "Annotations & Alerts",
-          "type": "dashboard"
-        }
-      ]
-    },
-    "editable": true,
-    "fiscalYearStartMonth": 0,
-    "graphTooltip": 0,
-    "id": 1,
-    "links": [],
-    "liveNow": false,
-    "panels": [
+  "annotations": {
+    "list": [
       {
+        "builtIn": 1,
         "datasource": {
-          "type": "influxdb",
-          "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+          "type": "grafana",
+          "uid": "-- Grafana --"
         },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "palette-classic"
-            },
-            "custom": {
-              "axisBorderShow": false,
-              "axisCenteredZero": false,
-              "axisColorMode": "text",
-              "axisLabel": "",
-              "axisPlacement": "auto",
-              "axisSoftMax": 5000,
-              "axisSoftMin": 0,
-              "barAlignment": 0,
-              "drawStyle": "line",
-              "fillOpacity": 0,
-              "gradientMode": "none",
-              "hideFrom": {
-                "legend": false,
-                "tooltip": false,
-                "viz": false
-              },
-              "insertNulls": false,
-              "lineInterpolation": "smooth",
-              "lineStyle": {
-                "fill": "solid"
-              },
-              "lineWidth": 1,
-              "pointSize": 5,
-              "scaleDistribution": {
-                "type": "linear"
-              },
-              "showPoints": "never",
-              "spanNulls": true,
-              "stacking": {
-                "group": "A",
-                "mode": "none"
-              },
-              "thresholdsStyle": {
-                "mode": "dashed"
-              }
-            },
-            "decimals": 3,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "dark-red",
-                  "value": 5000
-                }
-              ]
-            },
-            "unit": "massg",
-            "unitScale": true
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 15,
-          "w": 15,
-          "x": 0,
-          "y": 0
-        },
-        "id": 1,
-        "maxDataPoints": 10000,
-        "options": {
-          "legend": {
-            "calcs": [],
-            "displayMode": "list",
-            "placement": "bottom",
-            "showLegend": false
-          },
-          "tooltip": {
-            "mode": "multi",
-            "sort": "none"
-          }
-        },
-        "targets": [
-          {
-            "datasource": {
-              "type": "influxdb",
-              "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-            },
-            "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w0\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\n  |> map(fn: (r) => ({ r with _value: r._value / 10.0 }))",
-            "refId": "A"
-          },
-          {
-            "datasource": {
-              "type": "influxdb",
-              "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-            },
-            "hide": false,
-            "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\n  |> map(fn: (r) => ({ r with _value: r._value / 10.0 }))",
-            "refId": "B"
-          },
-          {
-            "datasource": {
-              "type": "influxdb",
-              "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-            },
-            "hide": false,
-            "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\n  |> map(fn: (r) => ({ r with _value: r._value / 10.0 }))",
-            "refId": "C"
-          },
-          {
-            "datasource": {
-              "type": "influxdb",
-              "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-            },
-            "hide": false,
-            "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w3\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\n  |> map(fn: (r) => ({ r with _value: r._value / 10.0 }))",
-            "refId": "D"
-          }
-        ],
-        "title": "Raw 4 sensors",
-        "type": "timeseries"
-      },
-      {
-        "datasource": {
-          "type": "influxdb",
-          "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "continuous-YlBl",
-              "seriesBy": "last"
-            },
-            "custom": {
-              "axisBorderShow": false,
-              "axisCenteredZero": false,
-              "axisColorMode": "text",
-              "axisLabel": "",
-              "axisPlacement": "auto",
-              "barAlignment": 0,
-              "drawStyle": "line",
-              "fillOpacity": 19,
-              "gradientMode": "hue",
-              "hideFrom": {
-                "legend": false,
-                "tooltip": false,
-                "viz": false
-              },
-              "insertNulls": false,
-              "lineInterpolation": "linear",
-              "lineWidth": 1,
-              "pointSize": 5,
-              "scaleDistribution": {
-                "type": "linear"
-              },
-              "showPoints": "never",
-              "spanNulls": true,
-              "stacking": {
-                "group": "A",
-                "mode": "none"
-              },
-              "thresholdsStyle": {
-                "mode": "off"
-              }
-            },
-            "decimals": 3,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            },
-            "unit": "massg",
-            "unitScale": true
-          },
-          "overrides": [
-            {
-              "matcher": {
-                "id": "byName",
-                "options": "state value"
-              },
-              "properties": [
-                {
-                  "id": "custom.axisPlacement",
-                  "value": "hidden"
-                },
-                {
-                  "id": "unit"
-                },
-                {
-                  "id": "custom.lineInterpolation",
-                  "value": "stepAfter"
-                },
-                {
-                  "id": "custom.lineStyle",
-                  "value": {
-                    "fill": "solid"
-                  }
-                },
-                {
-                  "id": "custom.fillOpacity",
-                  "value": 0
-                },
-                {
-                  "id": "color",
-                  "value": {
-                    "fixedColor": "dark-red",
-                    "mode": "shades"
-                  }
-                },
-                {
-                  "id": "mappings",
-                  "value": [
-                    {
-                      "options": {
-                        "1": {
-                          "index": 0,
-                          "text": "STABLE"
-                        },
-                        "2": {
-                          "index": 1,
-                          "text": "SOFT STABLE"
-                        },
-                        "3": {
-                          "index": 2,
-                          "text": "UNSTABLE"
-                        }
-                      },
-                      "type": "value"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        "gridPos": {
-          "h": 7,
-          "w": 9,
-          "x": 15,
-          "y": 0
-        },
-        "id": 2,
-        "maxDataPoints": 5000,
-        "options": {
-          "legend": {
-            "calcs": [],
-            "displayMode": "list",
-            "placement": "bottom",
-            "showLegend": false
-          },
-          "tooltip": {
-            "mode": "multi",
-            "sort": "none"
-          }
-        },
-        "targets": [
-          {
-            "datasource": {
-              "type": "influxdb",
-              "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-            },
-            "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-sum\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\n  |> map(fn: (r) => ({ r with _value: r._value / 10.0 }))",
-            "refId": "A"
-          },
-          {
-            "datasource": {
-              "type": "influxdb",
-              "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-            },
-            "hide": false,
-            "query": "import \"join\"\n\nleft = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"state\")\n\nright = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"state\")\n  |> last()\n  |> map(fn: (r) => ({r with _time: v.timeRangeStop}))\n\nunion(tables: [left, right])\n",
-            "refId": "B"
-          },
-          {
-            "datasource": {
-              "type": "influxdb",
-              "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-            },
-            "hide": false,
-            "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"debug\")",
-            "refId": "C"
-          }
-        ],
-        "title": "Total weight",
-        "type": "timeseries"
-      },
-      {
-        "datasource": {
-          "type": "influxdb",
-          "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "fixedColor": "dark-blue",
-              "mode": "shades"
-            },
-            "custom": {
-              "axisBorderShow": false,
-              "axisCenteredZero": false,
-              "axisColorMode": "text",
-              "axisLabel": "",
-              "axisPlacement": "auto",
-              "barAlignment": 0,
-              "drawStyle": "line",
-              "fillOpacity": 25,
-              "gradientMode": "none",
-              "hideFrom": {
-                "legend": false,
-                "tooltip": false,
-                "viz": false
-              },
-              "insertNulls": false,
-              "lineInterpolation": "linear",
-              "lineWidth": 1,
-              "pointSize": 5,
-              "scaleDistribution": {
-                "type": "linear"
-              },
-              "showPoints": "auto",
-              "spanNulls": false,
-              "stacking": {
-                "group": "A",
-                "mode": "none"
-              },
-              "thresholdsStyle": {
-                "mode": "off"
-              }
-            },
-            "decimals": 3,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            },
-            "unit": "massg",
-            "unitScale": true
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 8,
-          "w": 9,
-          "x": 15,
-          "y": 7
-        },
-        "id": 3,
-        "options": {
-          "legend": {
-            "calcs": [
-              "last",
-              "max"
-            ],
-            "displayMode": "list",
-            "placement": "bottom",
-            "showLegend": true
-          },
-          "tooltip": {
-            "mode": "single",
-            "sort": "none"
-          }
-        },
-        "targets": [
-          {
-            "datasource": {
-              "type": "influxdb",
-              "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-            },
-            "query": "import \"join\"\n\nleft = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-cat\")\n  |> map(fn: (r) => ({r with _value: r._value / 10}))\n\nright = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-cat\")\n  |> map(fn: (r) => ({r with _value: r._value / 10}))\n  |> last()\n  |> map(fn: (r) => ({r with _time: now()}))\n\nunion(tables: [left, right])",
-            "refId": "A"
-          }
-        ],
-        "title": "Cat",
-        "type": "timeseries"
-      },
-      {
-        "datasource": {
-          "type": "influxdb",
-          "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "fixedColor": "#592808",
-              "mode": "shades"
-            },
-            "custom": {
-              "axisBorderShow": false,
-              "axisCenteredZero": false,
-              "axisColorMode": "text",
-              "axisLabel": "",
-              "axisPlacement": "hidden",
-              "fillOpacity": 80,
-              "gradientMode": "none",
-              "hideFrom": {
-                "legend": false,
-                "tooltip": false,
-                "viz": false
-              },
-              "lineWidth": 1,
-              "scaleDistribution": {
-                "type": "linear"
-              },
-              "thresholdsStyle": {
-                "mode": "off"
-              }
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "massg",
-            "unitScale": true
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 5,
-          "w": 6,
-          "x": 0,
-          "y": 15
-        },
-        "id": 4,
-        "options": {
-          "barRadius": 0,
-          "barWidth": 0.97,
-          "fullHighlight": false,
-          "groupWidth": 0.7,
-          "legend": {
-            "calcs": [
-              "last",
-              "max",
-              "mean"
-            ],
-            "displayMode": "list",
-            "placement": "bottom",
-            "showLegend": true
-          },
-          "orientation": "auto",
-          "showValue": "auto",
-          "stacking": "none",
-          "tooltip": {
-            "mode": "multi",
-            "sort": "none"
-          },
-          "xTickLabelRotation": 0,
-          "xTickLabelSpacing": 0
-        },
-        "pluginVersion": "10.3.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "influxdb",
-              "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-            },
-            "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-poo\")\n  |> map(fn: (r) => ({r with _value: r._value / 10}))\n  |> bottom(n: 5)",
-            "refId": "A"
-          }
-        ],
-        "title": "Poo weight",
-        "type": "barchart"
-      },
-      {
-        "datasource": {
-          "type": "influxdb",
-          "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "continuous-GrYlRd"
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            },
-            "unitScale": true
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 4,
-          "w": 5,
-          "x": 6,
-          "y": 15
-        },
-        "id": 5,
-        "options": {
-          "displayMode": "lcd",
-          "maxVizHeight": 250,
-          "minVizHeight": 0,
-          "minVizWidth": 8,
-          "namePlacement": "auto",
-          "orientation": "horizontal",
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
-            "fields": "/^value$/",
-            "limit": 1,
-            "values": false
-          },
-          "showUnfilled": true,
-          "sizing": "auto",
-          "valueMode": "color"
-        },
-        "pluginVersion": "10.3.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "influxdb",
-              "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-            },
-            "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"poo-count\")",
-            "refId": "A"
-          }
-        ],
-        "title": "Poo count",
-        "type": "bargauge"
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
       }
-    ],
-    "refresh": "5s",
-    "schemaVersion": 39,
-    "tags": [],
-    "templating": {
-      "list": []
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMax": 5000,
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "dashed"
+            }
+          },
+          "decimals": 3,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "dark-red",
+                "value": 5000
+              }
+            ]
+          },
+          "unit": "massg",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 15,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "maxDataPoints": 10000,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+          },
+          "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w0\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\n  |> map(fn: (r) => ({ r with _value: r._value / 10.0 }))",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+          },
+          "hide": false,
+          "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\n  |> map(fn: (r) => ({ r with _value: r._value / 10.0 }))",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+          },
+          "hide": false,
+          "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\n  |> map(fn: (r) => ({ r with _value: r._value / 10.0 }))",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+          },
+          "hide": false,
+          "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w3\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\n  |> map(fn: (r) => ({ r with _value: r._value / 10.0 }))",
+          "refId": "D"
+        }
+      ],
+      "title": "Raw 4 sensors",
+      "type": "timeseries"
     },
-    "time": {
-      "from": "now-5m",
-      "to": "now"
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-YlBl",
+            "seriesBy": "last"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 19,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 3,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "massg",
+          "unitScale": true
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "state value"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "hidden"
+              },
+              {
+                "id": "unit"
+              },
+              {
+                "id": "custom.lineInterpolation",
+                "value": "stepAfter"
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "shades"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "1": {
+                        "index": 0,
+                        "text": "STABLE"
+                      },
+                      "2": {
+                        "index": 1,
+                        "text": "SOFT STABLE"
+                      },
+                      "3": {
+                        "index": 2,
+                        "text": "UNSTABLE"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 15,
+        "y": 0
+      },
+      "id": 2,
+      "maxDataPoints": 5000,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+          },
+          "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-sum\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\n  |> map(fn: (r) => ({ r with _value: r._value / 10.0 }))",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+          },
+          "hide": false,
+          "query": "import \"join\"\n\nleft = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"state\")\n\nright = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"state\")\n  |> last()\n  |> map(fn: (r) => ({r with _time: v.timeRangeStop}))\n\nunion(tables: [left, right])\n",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+          },
+          "hide": false,
+          "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"debug\")",
+          "refId": "C"
+        }
+      ],
+      "title": "Total system weight and state",
+      "type": "timeseries"
     },
-    "timepicker": {},
-    "timezone": "",
-    "title": "Litterbox",
-    "uid": "df077a11-8041-48cb-8888-f46164848df6",
-    "version": 67,
-    "weekStart": ""
-  }
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-blue",
+            "mode": "shades"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMax": 5600,
+            "axisSoftMin": 5000,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "dashed"
+            }
+          },
+          "decimals": 3,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 5500
+              }
+            ]
+          },
+          "unit": "massg",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 15,
+        "y": 7
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last",
+            "max"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+          },
+          "query": "import \"join\"\n\nleft = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-cat\")\n  |> map(fn: (r) => ({r with _value: r._value / 10}))\n\nright = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-cat\")\n  |> map(fn: (r) => ({r with _value: r._value / 10}))\n  |> last()\n  |> map(fn: (r) => ({r with _time: now()}))\n\nunion(tables: [left, right])",
+          "refId": "A"
+        }
+      ],
+      "title": "Cat weight",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#592808",
+            "mode": "shades"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "hidden",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "massg",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 0,
+        "y": 14
+      },
+      "id": 4,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [
+            "last",
+            "max",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+          },
+          "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-poo\")\n  |> map(fn: (r) => ({r with _value: r._value / 10}))\n  |> bottom(n: 5)",
+          "refId": "A"
+        }
+      ],
+      "title": "Poo weight (last five)",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-blue",
+            "mode": "shades"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "displayName": "count",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 7,
+        "y": 14
+      },
+      "id": 6,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": true,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [
+            "mean",
+            "sum"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 6,
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+          },
+          "query": "import \"join\"\n\nnonZeroCount = from(bucket: \"sensorRawLog\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"poo-count\")\n  |> window(every: 1d)\n  |> filter(fn: (r) => r[\"_value\"] > 0)\n  |> count()\n  |> duplicate(column: \"_start\", as: \"_time\")\n  |> window(every: inf)\n\nzeros = from(bucket: \"sensorRawLog\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"poo-count\")\n  |> window(every: 1d)\n  |> sum()\n  |> filter(fn: (r) => r[\"_value\"] == 0)\n  |> duplicate(column: \"_start\", as: \"_time\")\n  |> window(every: inf)\n\nunion(tables: [nonZeroCount, zeros])\n  |> sort(columns: [\"_time\"])",
+          "refId": "A"
+        }
+      ],
+      "title": "Poo count by day of the week",
+      "transformations": [
+        {
+          "id": "formatTime",
+          "options": {
+            "outputFormat": "ddd D",
+            "timeField": "Time",
+            "timezone": "Europe/Amsterdam",
+            "useTimezone": true
+          }
+        }
+      ],
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 19,
+        "y": 14
+      },
+      "id": 5,
+      "options": {
+        "displayMode": "lcd",
+        "maxVizHeight": 250,
+        "minVizHeight": 0,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^value$/",
+          "limit": 1,
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+          },
+          "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"poo-count\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Poo count (right now)",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-YlBl",
+            "seriesBy": "last"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 19,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 3,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "massg",
+          "unitScale": true
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "rst-reason value"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "hidden"
+              },
+              {
+                "id": "unit"
+              },
+              {
+                "id": "custom.lineInterpolation",
+                "value": "stepAfter"
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "shades"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "index": 0,
+                        "text": "Unknown"
+                      },
+                      "1": {
+                        "index": 1,
+                        "text": "Power on"
+                      },
+                      "2": {
+                        "index": 2,
+                        "text": "External pin "
+                      },
+                      "3": {
+                        "index": 3,
+                        "text": "Software reset"
+                      },
+                      "4": {
+                        "index": 4,
+                        "text": "Panic"
+                      },
+                      "5": {
+                        "index": 5,
+                        "text": "Interrupt watchdog"
+                      },
+                      "6": {
+                        "index": 6,
+                        "text": "Task watchdog"
+                      },
+                      "7": {
+                        "index": 7,
+                        "text": "Other watchdogs"
+                      },
+                      "8": {
+                        "index": 8,
+                        "text": "Deep sleep wakeup"
+                      },
+                      "9": {
+                        "index": 9,
+                        "text": "Brownout"
+                      },
+                      "10": {
+                        "index": 10,
+                        "text": "Reset over SDIO"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 16,
+        "w": 15,
+        "x": 0,
+        "y": 22
+      },
+      "id": 7,
+      "maxDataPoints": 5000,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+          },
+          "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-sum\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\n  |> map(fn: (r) => ({ r with _value: r._value / 10.0 }))",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+          },
+          "hide": false,
+          "query": "import \"join\"\n\nleft = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"rst-reason\")\n\nright = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"rst-reason\")\n  |> last()\n  |> map(fn: (r) => ({r with _time: v.timeRangeStop}))\n\nunion(tables: [left, right])\n",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
+          },
+          "hide": false,
+          "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"debug\")",
+          "refId": "C"
+        }
+      ],
+      "title": "Total system weight and reset reason",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Litterbox",
+  "uid": "df077a11-8041-48cb-8888-f46164848df6",
+  "version": 89,
+  "weekStart": ""
+}
