@@ -4,31 +4,35 @@
 
 #include "sensorDataSender.h"
 
-void httpPostString(String *str)
+void httpPostString(String *str, int retryCount = 0, int requestsSent = 0)
 {
     HTTPClient http;
-
-    http.begin("http://192.168.178.201:8088/api/sensors/data"); // Specify destination for HTTP request
+    http.begin("http://192.168.178.201:8088/api/sensors/data");
     http.addHeader("Content-Type", "text/CSV");
 
-    int httpResponseCode = http.POST(str->c_str()); // Make the request
+    int httpResponseCode = http.POST(str->c_str());
+    requestsSent++;
 
-    if (httpResponseCode > 0)
-    { // Check for the returning code
+    if (httpResponseCode >= 200 && httpResponseCode < 300)
+    {
         String payload = http.getString();
+        http.end();
         Serial.print("[data sender] response code: ");
         Serial.println(httpResponseCode);
         Serial.print("[data sender] body: ");
         Serial.println(payload);
     }
-
     else
     {
+        http.end();
         Serial.print("[data sender] Error on HTTP request: ");
         Serial.println(httpResponseCode);
-    }
 
-    http.end(); // Free the resources
+        if (requestsSent <= retryCount) {
+            delay(100);
+            httpPostString(str, retryCount, requestsSent);
+        }
+    }
 }
 
 void sendRawData(Buffer buffers[SENSOR_AMOUNT])
@@ -72,7 +76,7 @@ void sendPooCountAndWeight(long pooWeight)
     str += state.catWeight;
     str += '\n';
 
-    httpPostString(&str);
+    httpPostString(&str, 5);
 }
 
 void sendPooCount()
@@ -86,7 +90,7 @@ void sendPooCount()
     str += state.pooCount;
     str += '\n';
 
-    httpPostString(&str);
+    httpPostString(&str, 5);
 }
 
 void sendLitterBoxState(UnixTimeMs ms)
@@ -99,7 +103,7 @@ void sendLitterBoxState(UnixTimeMs ms)
     str += state.litterBoxState;
     str += '\n';
 
-    httpPostString(&str);
+    httpPostString(&str, 5);
 }
 
 void reportResetReason()
