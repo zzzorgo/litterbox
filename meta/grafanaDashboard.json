@@ -266,6 +266,17 @@
                     "type": "value"
                   }
                 ]
+              },
+              {
+                "id": "min",
+                "value": 1
+              },
+              {
+                "id": "max",
+                "value": 3.5
+              },
+              {
+                "id": "min"
               }
             ]
           }
@@ -306,7 +317,7 @@
             "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
           },
           "hide": false,
-          "query": "import \"join\"\n\nleft = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"state\")\n\nright = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"state\")\n  |> last()\n  |> map(fn: (r) => ({r with _time: v.timeRangeStop}))\n\nunion(tables: [left, right])\n",
+          "query": "import \"join\"\n\nleft = from(bucket: \"sensorRawLog\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"state\")\n\nright = from(bucket: \"sensorRawLog\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"state\")\n  |> last()\n  |> map(fn: (r) => ({r with _time: v.timeRangeStop}))\n\nunion(tables: [left, right])\n",
           "refId": "B"
         },
         {
@@ -415,7 +426,7 @@
             "type": "influxdb",
             "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
           },
-          "query": "import \"join\"\n\nleft = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-cat\")\n  |> map(fn: (r) => ({r with _value: r._value / 10}))\n\nright = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-cat\")\n  |> map(fn: (r) => ({r with _value: r._value / 10}))\n  |> last()\n  |> map(fn: (r) => ({r with _time: now()}))\n\nunion(tables: [left, right])",
+          "query": "import \"join\"\n\nleft = from(bucket: \"sensorRawLog\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-cat\")\n  |> map(fn: (r) => ({r with _value: r._value / 10}))\n\nright = from(bucket: \"sensorRawLog\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-cat\")\n  |> map(fn: (r) => ({r with _value: r._value / 10}))\n  |> last()\n  |> map(fn: (r) => ({r with _time: now()}))\n\nunion(tables: [left, right])",
           "refId": "A"
         }
       ],
@@ -470,7 +481,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 11,
         "w": 7,
         "x": 0,
         "y": 14
@@ -508,7 +519,7 @@
             "type": "influxdb",
             "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
           },
-          "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-poo\")\n  |> map(fn: (r) => ({r with _value: r._value / 10}))\n  |> bottom(n: 5)",
+          "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-poo\")\n  |> map(fn: (r) => ({r with _value: r._value / 10}))\n  |> sort(columns: [\"_time\"], desc: true)\n  |> limit(n: 5)\n  |> sort(columns: [\"_time\"])",
           "refId": "A"
         }
       ],
@@ -567,7 +578,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 11,
         "w": 12,
         "x": 7,
         "y": 14
@@ -683,7 +694,7 @@
             "type": "influxdb",
             "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
           },
-          "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"poo-count\")",
+          "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"poo-count\")",
           "refId": "A"
         }
       ],
@@ -705,8 +716,9 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
+            "axisGridShow": true,
             "axisLabel": "",
-            "axisPlacement": "auto",
+            "axisPlacement": "left",
             "barAlignment": 0,
             "drawStyle": "line",
             "fillOpacity": 19,
@@ -717,7 +729,7 @@
               "viz": false
             },
             "insertNulls": false,
-            "lineInterpolation": "linear",
+            "lineInterpolation": "stepBefore",
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -735,6 +747,8 @@
           },
           "decimals": 3,
           "mappings": [],
+          "max": 10,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -748,7 +762,7 @@
               }
             ]
           },
-          "unit": "massg",
+          "unit": "none",
           "unitScale": true
         },
         "overrides": [
@@ -760,7 +774,7 @@
             "properties": [
               {
                 "id": "custom.axisPlacement",
-                "value": "hidden"
+                "value": "left"
               },
               {
                 "id": "unit"
@@ -839,16 +853,20 @@
                     "type": "value"
                   }
                 ]
+              },
+              {
+                "id": "unit",
+                "value": "none"
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 16,
-        "w": 15,
-        "x": 0,
-        "y": 22
+        "h": 15,
+        "w": 5,
+        "x": 19,
+        "y": 18
       },
       "id": 7,
       "maxDataPoints": 5000,
@@ -870,16 +888,8 @@
             "type": "influxdb",
             "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
           },
-          "query": "from(bucket: \"sensorRawLog\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"w-sum\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\n  |> map(fn: (r) => ({ r with _value: r._value / 10.0 }))",
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "e22667bc-dbd4-47d2-b33f-2bf6a3c7d8e2"
-          },
           "hide": false,
-          "query": "import \"join\"\n\nleft = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"rst-reason\")\n\nright = from(bucket: \"sensorRawLog\")\n  |> range(start: -3d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"rst-reason\")\n  |> last()\n  |> map(fn: (r) => ({r with _time: v.timeRangeStop}))\n\nunion(tables: [left, right])\n",
+          "query": "import \"join\"\n\nleft = from(bucket: \"sensorRawLog\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"rst-reason\")\n\nright = from(bucket: \"sensorRawLog\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"rst-reason\")\n  |> last()\n  |> map(fn: (r) => ({r with _time: v.timeRangeStop}))\n\nunion(tables: [left, right])\n",
           "refId": "B"
         },
         {
@@ -892,7 +902,7 @@
           "refId": "C"
         }
       ],
-      "title": "Total system weight and reset reason",
+      "title": "Reset reason",
       "type": "timeseries"
     }
   ],
@@ -903,13 +913,13 @@
     "list": []
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Litterbox",
   "uid": "df077a11-8041-48cb-8888-f46164848df6",
-  "version": 89,
+  "version": 106,
   "weekStart": ""
 }

@@ -1,0 +1,23 @@
+{
+    "apiVersion": 1,
+    "contactPoints": [
+        {
+            "orgId": 1,
+            "name": "Alert bot",
+            "receivers": [
+                {
+                    "uid": "dc8a451c-f99d-4290-b0d5-7b7d1aee7ce8",
+                    "type": "telegram",
+                    "settings": {
+                        "bottoken": "<token>",
+                        "chatid": "-4147694286",
+                        "disable_notification": false,
+                        "disable_web_page_preview": false,
+                        "protect_content": false
+                    },
+                    "disableResolveMessage": false
+                }
+            ]
+        }
+    ]
+}
