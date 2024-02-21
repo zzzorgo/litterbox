@@ -109,9 +109,11 @@ void renderState()
   strip.show();
 }
 
-void switchScreen()
-{
-  Serial.println("SWITCH!");
+void renderLoop(void* param) {
+  while (true) {
+    renderState();
+    delay(100);
+  }
 }
 
 void renderBegin(GpioNums buttonPin)
@@ -126,6 +128,8 @@ void renderBegin(GpioNums buttonPin)
 
   pinMode(buttonPin, INPUT_PULLDOWN);
   attachInterrupt(digitalPinToInterrupt(buttonPin), handleInterrupt, RISING);
+
+  xTaskCreate(renderLoop, "renderLoop", 2048, NULL, tskIDLE_PRIORITY, NULL);
 }
 
 void renderSleep()

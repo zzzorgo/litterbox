@@ -57,15 +57,11 @@ void setup() {
 }
 
 void loop() {
-  renderState();
   handleClient(printData);
-  // todo: remove delay?
   delay(3000);
 
   popWeightBuffer(&tempBuffers[0]);
   sendWeighData(&tempBuffers[0]);
 
   persistState();
-
-  // sleepOnTimeout();
 }
