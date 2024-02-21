@@ -124,8 +124,8 @@ void renderBegin(GpioNums buttonPin)
 
   strip.begin();
 
-  pinMode(buttonPin, INPUT);
-  attachInterrupt(digitalPinToInterrupt(buttonPin), handleInterrupt, FALLING);
+  pinMode(buttonPin, INPUT_PULLDOWN);
+  attachInterrupt(digitalPinToInterrupt(buttonPin), handleInterrupt, RISING);
 }
 
 void renderSleep()

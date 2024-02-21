@@ -4,7 +4,7 @@
 using GpioNums = gpio_num_t;
 
 // todo change
-const GpioNums buttonPin = GPIO_NUM_32;
+const GpioNums buttonPin = GPIO_NUM_23;
 
 const GpioNums weightSensorDataPin1 = GPIO_NUM_15;
 const GpioNums weightSensorClockPin1 = GPIO_NUM_2;
