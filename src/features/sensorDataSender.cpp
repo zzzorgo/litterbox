@@ -197,12 +197,13 @@ void next(WeightEntry entry)
                         long catWeight = maxSoftStableValue - average;
                         state.pooCount++;
                         state.catWeight = catWeight;
-
+                        state.rerender = true;
                         sendPooCountAndWeight(vesselDiff);
                     }
                     else if (vesselDiff < -ACTION_SENSITIVITY_THRESHOLD)
                     {
                         state.pooCount = 0;
+                        state.rerender = true;
                         sendPooCount();
                     }
 

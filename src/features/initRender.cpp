@@ -14,7 +14,7 @@ enum ScreenState
 
 ScreenState SCREENS[] = {IpScreen, PooCount};
 int screenCount = sizeof(SCREENS) / sizeof(SCREENS[0]);
-int screenIndex = screenCount - 1;
+int screenIndex = 0;
 IPAddress nullIp = IPAddress();
 
 bool buttonState = false;
@@ -22,14 +22,13 @@ bool prevButtonState = false;
 
 void renderState()
 {
-  bool rerender = false;
   bool started = state.ip != nullIp;
 
   buttonState = digitalRead(buttonPin);
 
   if (prevButtonState == 1 && buttonState == 0)
   {
-    rerender = true;
+    state.rerender = true;
 
     if (screenIndex == screenCount - 1)
     {
@@ -43,10 +42,11 @@ void renderState()
 
   prevButtonState = buttonState;
 
-  if (rerender && started)
+  if (state.rerender && started)
   {
     ScreenState currentScreen = SCREENS[screenIndex];
     display.clear();
+    state.rerender = false;
 
     switch (currentScreen)
     {

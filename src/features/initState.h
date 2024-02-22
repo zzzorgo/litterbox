@@ -18,6 +18,7 @@ struct State {
     int pooCount;
     int catWeight;
     long offsets[4];
+    bool rerender;
 };
 
 extern State state;

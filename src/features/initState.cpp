@@ -5,4 +5,5 @@ State state = {
     .ip = WiFi.localIP(),
     .pooCount = 0,
     .catWeight = 0,
+    .rerender = true,
 };
