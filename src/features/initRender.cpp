@@ -5,15 +5,6 @@
 
 LiquidCrystal_I2C display(i2cDisplayAddress, 16, 2);
 Adafruit_NeoPixel strip(LED_COUNT, rgbPin, NEO_GRB + NEO_KHZ800);
-volatile bool buttonInterruptionOccured = true;
-portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
-
-void IRAM_ATTR handleInterrupt()
-{
-  portENTER_CRITICAL_ISR(&mux);
-  buttonInterruptionOccured = true;
-  portEXIT_CRITICAL_ISR(&mux);
-}
 
 enum ScreenState
 {
@@ -24,12 +15,19 @@ enum ScreenState
 ScreenState SCREENS[] = {IpScreen, PooCount};
 int screenCount = sizeof(SCREENS) / sizeof(SCREENS[0]);
 int screenIndex = screenCount - 1;
+IPAddress nullIp = IPAddress();
+
+bool buttonState = false;
+bool prevButtonState = false;
 
 void renderState()
 {
   bool rerender = false;
+  bool started = state.ip != nullIp;
 
-  if (buttonInterruptionOccured)
+  buttonState = digitalRead(buttonPin);
+
+  if (prevButtonState == 1 && buttonState == 0)
   {
     rerender = true;
 
@@ -41,13 +39,11 @@ void renderState()
     {
       screenIndex++;
     }
-
-    portENTER_CRITICAL(&mux);
-    buttonInterruptionOccured = false;
-    portEXIT_CRITICAL(&mux);
   }
 
-  if (rerender)
+  prevButtonState = buttonState;
+
+  if (rerender && started)
   {
     ScreenState currentScreen = SCREENS[screenIndex];
     display.clear();
@@ -109,8 +105,10 @@ void renderState()
   strip.show();
 }
 
-void renderLoop(void* param) {
-  while (true) {
+void renderLoop(void *param)
+{
+  while (true)
+  {
     renderState();
     delay(100);
   }
@@ -127,9 +125,8 @@ void renderBegin(GpioNums buttonPin)
   strip.begin();
 
   pinMode(buttonPin, INPUT_PULLDOWN);
-  attachInterrupt(digitalPinToInterrupt(buttonPin), handleInterrupt, RISING);
 
-  xTaskCreate(renderLoop, "renderLoop", 2048, NULL, tskIDLE_PRIORITY, NULL);
+  xTaskCreate(renderLoop, "renderLoop", 2048, &buttonPin, tskIDLE_PRIORITY, NULL);
 }
 
 void renderSleep()
