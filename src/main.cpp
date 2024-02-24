@@ -64,4 +64,5 @@ void loop() {
   sendWeighData(&tempBuffers[0]);
 
   persistState();
+  syncRenderTask();
 }

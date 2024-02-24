@@ -49,6 +49,7 @@ State prevState;
 bool persistState()
 {
   if (
+    // true
     state.catWeight != prevState.catWeight ||
     state.pooCount != prevState.pooCount ||
     state.offsets[0] != prevState.offsets[0] ||
@@ -57,6 +58,8 @@ bool persistState()
     state.offsets[3] != prevState.offsets[3]
   )
   {
+    // state.pooCount = 0;
+    // state.catWeight = 52370;
     File file = SPIFFS.open(STATE_FILE_PATH, FILE_WRITE);
 
     if (!file)

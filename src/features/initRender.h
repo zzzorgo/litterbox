@@ -12,5 +12,6 @@
 void renderState();
 void renderBegin(GpioNums buttonPin);
 void renderSleep();
+void syncRenderTask();
 
 #endif

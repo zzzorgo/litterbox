@@ -102,6 +102,14 @@ void renderState()
   }
 
   strip.setBrightness(25);
+}
+
+
+/**
+ * For some reason Adafruit_NeoPixel starts flashing with blue light when rendered within RTOS task
+ * as a temporary fix move it back to main loop
+ */
+void syncRenderTask() {
   strip.show();
 }
 

@@ -174,7 +174,7 @@ void next(WeightEntry entry)
             state.litterBoxState = UnstableWeight;
         }
 
-        if (prevLitterBoxState != state.litterBoxState)
+        if (prevLitterBoxState != state.litterBoxState && prevVesselWeight != UNDEFINED_VALUE)
         {
             if (state.litterBoxState == StableWeight)
             {
