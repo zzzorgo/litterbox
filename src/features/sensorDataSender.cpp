@@ -126,6 +126,7 @@ long prevVesselWeight = UNDEFINED_VALUE;
 LitterBoxState prevLitterBoxState = InitialWeight;
 long softStableValues[SOFT_STABLE_BUFFER_SIZE] = {};
 int softStableValuesCount = 0;
+UnixTimeMs lastStateChangeTime = UNDEFINED_VALUE;
 
 void next(WeightEntry entry)
 {
@@ -230,9 +231,10 @@ void next(WeightEntry entry)
             } else {
                 WeightEntry queueValue;
                 timeOfStateChange = sampleQueue.peek(&queueValue);
-                timeOfStateChange = queueValue.time;
+                timeOfStateChange = max(queueValue.time, lastStateChangeTime + 1);
             }
 
+            lastStateChangeTime = timeOfStateChange;
             sendLitterBoxState(timeOfStateChange);
             prevLitterBoxState = state.litterBoxState;
         }
