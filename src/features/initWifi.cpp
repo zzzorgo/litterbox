@@ -19,6 +19,8 @@ void wifiBegin() {
 
   Serial.println("[Wifi] Connected!");
   state.ip = WiFi.localIP();
+  WiFi.setAutoReconnect(true);
+  WiFi.persistent(true);
 }
 
 void wifiSleep() {
