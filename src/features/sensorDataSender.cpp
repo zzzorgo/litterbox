@@ -4,11 +4,18 @@
 
 #include "sensorDataSender.h"
 
+HTTPClient http;
+
 void httpPostString(String *str, int retryCount = 0, int requestsSent = 0)
 {
-    HTTPClient http;
-    http.begin("http://192.168.178.201:8088/api/sensors/data");
-    http.addHeader("Content-Type", "text/CSV");
+    if (!http.connected()) {
+        http.end();
+
+        http.begin("http://192.168.178.201:8088/api/sensors/data");
+        http.addHeader("Content-Type", "text/CSV");
+        http.addHeader("Connection", "keep-alive");
+        http.setReuse(true);
+    }
 
     int httpResponseCode = http.POST(str->c_str());
     requestsSent++;
