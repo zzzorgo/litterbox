@@ -11,7 +11,7 @@ void httpPostString(String *str, int retryCount = 0, int requestsSent = 0)
     if (!http.connected()) {
         http.end();
 
-        http.begin("http://192.168.178.201:8088/api/sensors/data");
+        http.begin("http://192.168.1.175:8088/api/sensors/data");
         http.addHeader("Content-Type", "text/CSV");
         http.addHeader("Connection", "keep-alive");
         http.setReuse(true);

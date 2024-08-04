@@ -23,7 +23,7 @@
 WeightConfig weightConfigs[SENSOR_AMOUNT] = {
   {.clockPin = weightSensorClockPin1, .dataPin = weightSensorDataPin1, .scale = 40.0},
   {.clockPin = weightSensorClockPin2, .dataPin = weightSensorDataPin2, .scale = 42.256637},
-  {.clockPin = weightSensorClockPin3, .dataPin = weightSensorDataPin3, .scale = 46.283186},
+  {.clockPin = weightSensorClockPin3, .dataPin = weightSensorDataPin3, .scale = 43.928631},
   {.clockPin = weightSensorClockPin4, .dataPin = weightSensorDataPin4, .scale = 41.592920},
 };
 
