@@ -3,6 +3,7 @@
 #include <cppQueue.h>
 
 #include "sensorDataSender.h"
+#include "sessionClassifier.h"
 
 HTTPClient http;
 
@@ -64,10 +65,13 @@ void sendRawData(Buffer buffers[SENSOR_AMOUNT])
     httpPostString(&str);
 }
 
-void sendPooCountAndWeight(long pooWeight)
+void sendSessionResult(
+    long outputWeight,
+    const SessionClassificationResult &sessionResult
+)
 {
     String str;
-    str.reserve(270);
+    str.reserve(720);
     UnixTimeMs nowTime = getUnixTimeMs();
 
     str += nowTime;
@@ -76,11 +80,38 @@ void sendPooCountAndWeight(long pooWeight)
     str += '\n';
     str += nowTime;
     str += ";w-poo;";
-    str += pooWeight;
+    str += outputWeight;
     str += '\n';
     str += nowTime;
     str += ";w-cat;";
     str += state.catWeight;
+    str += '\n';
+
+    // All session fields share the start timestamp, allowing the backend to
+    // pivot them into one record and Grafana to render start/end as a range.
+    str += sessionResult.startTime;
+    str += ";session-start;";
+    str += sessionResult.startTime;
+    str += '\n';
+    str += sessionResult.startTime;
+    str += ";session-end;";
+    str += sessionResult.endTime;
+    str += '\n';
+    str += sessionResult.startTime;
+    str += ";session-output-weight;";
+    str += outputWeight;
+    str += '\n';
+    str += sessionResult.startTime;
+    str += ";session-classification;";
+    str += sessionResult.classification;
+    str += '\n';
+    str += sessionResult.startTime;
+    str += ";session-movement-score;";
+    str += sessionResult.movementScore;
+    str += '\n';
+    str += sessionResult.startTime;
+    str += ";session-movement-samples;";
+    str += sessionResult.movementSampleCount;
     str += '\n';
 
     httpPostString(&str, 5);
@@ -184,6 +215,24 @@ void next(WeightEntry entry)
 
         if (prevLitterBoxState != state.litterBoxState && prevVesselWeight != UNDEFINED_VALUE)
         {
+            UnixTimeMs timeOfStateChange = 0;
+            if (prevLitterBoxState < state.litterBoxState)
+            {
+                timeOfStateChange = entry.time;
+            } else {
+                WeightEntry queueValue;
+                timeOfStateChange = sampleQueue.peek(&queueValue);
+                timeOfStateChange = max(queueValue.time, lastStateChangeTime + 1);
+            }
+
+            if (
+                prevLitterBoxState == StableWeight &&
+                state.litterBoxState != StableWeight
+            )
+            {
+                startSessionClassification(timeOfStateChange);
+            }
+
             if (state.litterBoxState == StableWeight)
             {
                 if (prevLitterBoxState != InitialWeight)
@@ -206,13 +255,20 @@ void next(WeightEntry entry)
                         state.pooCount++;
                         state.catWeight = catWeight;
                         state.rerender = true;
-                        sendPooCountAndWeight(vesselDiff);
+                        SessionClassificationResult sessionResult =
+                            finishSessionClassification(timeOfStateChange);
+                        sendSessionResult(vesselDiff, sessionResult);
                     }
                     else if (vesselDiff < -ACTION_SENSITIVITY_THRESHOLD)
                     {
                         state.pooCount = 0;
                         state.rerender = true;
+                        cancelSessionClassification();
                         sendPooCount();
+                    }
+                    else
+                    {
+                        cancelSessionClassification();
                     }
 
                     softStableValuesCount = 0;
@@ -229,16 +285,6 @@ void next(WeightEntry entry)
                     Serial.println("[data sender] softStableValues overflow");
                     softStableValuesCount = 0;
                 }
-            }
-
-            UnixTimeMs timeOfStateChange = 0;
-            if (prevLitterBoxState < state.litterBoxState)
-            {
-                timeOfStateChange = entry.time;
-            } else {
-                WeightEntry queueValue;
-                timeOfStateChange = sampleQueue.peek(&queueValue);
-                timeOfStateChange = max(queueValue.time, lastStateChangeTime + 1);
             }
 
             lastStateChangeTime = timeOfStateChange;
@@ -274,16 +320,19 @@ void sendAggregatedData(Buffer buffers[SENSOR_AMOUNT])
     for (int j = 0; j < sampleLength; j++)
     {
         sample[j] = {.time = 0, .value = 0};
+        long sensorValues[SENSOR_AMOUNT];
 
         for (int i = 0; i < SENSOR_AMOUNT; i++)
         {
             sample[j].time += buffers[i].data[j].time;
             sample[j].value += buffers[i].data[j].value;
+            sensorValues[i] = buffers[i].data[j].value;
         }
 
         sample[j].time = sample[j].time / SENSOR_AMOUNT;
 
         next(sample[j]);
+        addSessionClassificationSample(sensorValues, state.litterBoxState);
     }
 
     String str;
@@ -302,6 +351,6 @@ void sendAggregatedData(Buffer buffers[SENSOR_AMOUNT])
 
 void sendWeighData(Buffer buffers[SENSOR_AMOUNT])
 {
-    sendRawData(buffers);
     sendAggregatedData(buffers);
+    sendRawData(buffers);
 }
